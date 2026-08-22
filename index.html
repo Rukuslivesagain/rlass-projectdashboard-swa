@@ -2,10 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RLASS Project Dashboard</title>
+
+    <title>Active Manager</title>
+
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#111111">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #appFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>RLASS Project Dashboard</h1>
+
+    <iframe id="appFrame"></iframe>
+
+    <script>
+        const frame = document.getElementById('appFrame');
+
+        let prodUrl = "https://apps.powerapps.com/play/e/ffc5e30d-e429-eb68-bb6e-1713dd4a4a1a"
+                    + "/a/be1ce5c7-d9df-4350-b0db-c473720404b4"
+                    + "?tenantId=5e93c790-e27b-42b1-b915-82f7d02fe1e1"
+                    + "&hint=a05c57c8-248c-4ecf-a4b9-ab3adf81ea97"
+                    + "&hidenavbar=true"
+                    + "&source=iframe"
+                    + "&launcher=prodportal"
+                    + "&hostDomain=" + encodeURIComponent(window.location.hostname);
+
+        frame.src = prodUrl;
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("/sw.js")
+                    .then(() => console.log("Service Worker Registered"))
+                    .catch(err => console.log(err));
+            });
+        }
+    </script>
+
 </body>
 </html>
