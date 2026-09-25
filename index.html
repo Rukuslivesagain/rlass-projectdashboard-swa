@@ -9,12 +9,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Project Dashboard - New</title>
-
-    <link
-        rel="manifest"
-        href="/manifest.json"
-    >
+    <title>Project Dashboard</title>
 
     <meta
         name="theme-color"
@@ -22,6 +17,7 @@
     >
 
     <style>
+
         html,
         body {
             margin: 0;
@@ -30,67 +26,103 @@
             width: 100%;
             height: 100%;
 
-            background:
-                #111111;
-
-            color:
-                #ffffff;
+            background: #111111;
+            color: #ffffff;
 
             font-family:
                 Arial,
-                Helvetica,
                 sans-serif;
         }
 
-        #app {
+        body {
             display: flex;
-
-            width: 100%;
-            height: 100%;
 
             align-items: center;
             justify-content: center;
         }
 
-        #testPanel {
+        #ctrMain {
             display: flex;
             flex-direction: column;
 
-            align-items: center;
+            width: 700px;
+            max-width: calc(100% - 40px);
 
-            gap: 12px;
+            padding: 32px;
+
+            box-sizing: border-box;
+
+            background: #161b22;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.15);
+
+            border-radius: 8px;
         }
 
-        #testTitle {
-            margin: 0;
+        #txtTitle {
+            margin: 0 0 24px 0;
 
             font-size: 28px;
             font-weight: 600;
         }
 
-        #testStatus {
-            margin: 0;
+        #txtStatus {
+            margin-bottom: 16px;
 
-            font-size: 14px;
-
-            opacity: .75;
+            color: rgba(255, 255, 255, 0.70);
         }
+
+        #ctrUser {
+            display: none;
+
+            padding: 16px;
+
+            background: #0d1117;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.10);
+
+            border-radius: 4px;
+        }
+
+        #txtUserLabel {
+            margin-bottom: 8px;
+
+            color: rgba(255, 255, 255, 0.60);
+
+            font-size: 13px;
+        }
+
+        #txtUserEmail {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
     </style>
+
 </head>
 
 <body>
 
-    <div id="app">
+    <div id="ctrMain">
 
-        <div id="testPanel">
+        <h1 id="txtTitle">
+            Project Dashboard
+        </h1>
 
-            <h1 id="testTitle">
-                Project Dashboard
-            </h1>
+        <div id="txtStatus">
+            Checking authentication...
+        </div>
 
-            <p id="testStatus">
-                Standalone SWA Test
-            </p>
+        <div id="ctrUser">
+
+            <div id="txtUserLabel">
+                Authenticated User
+            </div>
+
+            <div id="txtUserEmail">
+            </div>
 
         </div>
 
@@ -99,28 +131,152 @@
     <script>
 
         // =====================================================
-        // Project Dashboard
-        // Standalone SWA Host Test
+        // Resolve Authentication Context
         // =====================================================
 
-        const app =
-            document.getElementById(
-                "app"
-            );
+        async function processResolveAuthenticationContext() {
 
-        if (
-            !app
-        ) {
+            const txtStatus =
+                document.getElementById(
+                    "txtStatus"
+                );
 
-            throw new Error(
-                "Project Dashboard application root was not found."
-            );
+            const ctrUser =
+                document.getElementById(
+                    "ctrUser"
+                );
+
+            const txtUserEmail =
+                document.getElementById(
+                    "txtUserEmail"
+                );
+
+            try {
+
+                // =====================================================
+                // Retrieve SWA Authentication Context
+                // =====================================================
+
+                const response =
+                    await fetch(
+                        "/.auth/me",
+                        {
+                            method:
+                                "GET",
+
+                            credentials:
+                                "include",
+
+                            cache:
+                                "no-store"
+                        }
+                    );
+
+                if (
+                    !response.ok
+                ) {
+
+                    throw new Error(
+                        `Authentication request failed: ${response.status} ${response.statusText}`
+                    );
+
+                }
+
+                const authenticationContext =
+                    await response.json();
+
+                const clientPrincipal =
+                    authenticationContext.clientPrincipal;
+
+                // =====================================================
+                // Authentication Required
+                // =====================================================
+
+                if (
+                    !clientPrincipal ||
+                    !clientPrincipal.userDetails
+                ) {
+
+                    txtStatus.textContent =
+                        "Authentication required. Redirecting...";
+
+                    const returnUrl =
+                        window.location.origin +
+                        window.location.pathname;
+
+                    window.location.href =
+                        "/.auth/login/aad" +
+                        "?post_login_redirect_uri=" +
+                        encodeURIComponent(
+                            returnUrl
+                        );
+
+                    return;
+
+                }
+
+                // =====================================================
+                // Resolve Authenticated User
+                // =====================================================
+
+                const userEmail =
+                    clientPrincipal.userDetails
+                        .toLowerCase();
+
+                // =====================================================
+                // Display Authenticated User
+                // =====================================================
+
+                txtStatus.textContent =
+                    "Authentication successful.";
+
+                txtUserEmail.textContent =
+                    userEmail;
+
+                ctrUser.style.display =
+                    "block";
+
+                // =====================================================
+                // Development Logging
+                // =====================================================
+
+                console.log(
+                    "[ProjectDashboard] Authentication Context:",
+                    authenticationContext
+                );
+
+                console.log(
+                    "[ProjectDashboard] Authenticated User:",
+                    userEmail
+                );
+
+            }
+            catch (
+                error
+            ) {
+
+                // =====================================================
+                // Authentication Failure
+                // =====================================================
+
+                console.error(
+                    "[ProjectDashboard] Authentication Error:",
+                    error
+                );
+
+                txtStatus.textContent =
+                    "Unable to retrieve authentication information.";
+
+            }
 
         }
 
-        console.log(
-            "[ProjectDashboard] Standalone SWA host loaded."
-        );
+
+        // =====================================================
+        // Application Startup
+        // =====================================================
+
+        processResolveAuthenticationContext();
 
     </script>
 
