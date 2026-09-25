@@ -1,0 +1,23 @@
+/* =====================================================
+   Standalone Host Container
+
+   Replaces the sizing the Power Apps host previously
+   provided to the PCF container (init() inline styles and
+   context.mode.allocatedWidth / allocatedHeight).
+   ===================================================== */
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}

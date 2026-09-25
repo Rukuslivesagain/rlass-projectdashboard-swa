@@ -9,7 +9,15 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/openseadragon": "5.0.2",
     "typescript": "~6.0.2",
     "vite": "^8.3.0"
+  },
+  "dependencies": {
+    "hyparquet": "1.29.2",
+    "hyparquet-writer": "0.16.9",
+    "openseadragon": "6.1.1",
+    "pdfjs-dist": "3.11.174",
+    "xlsx": "0.18.5"
   }
 }

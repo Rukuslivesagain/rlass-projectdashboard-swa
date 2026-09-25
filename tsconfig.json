@@ -10,15 +10,16 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
 
-    /* Linting */
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    /* Type checking - aligned with the Project Dashboard PCF baseline
+       (pcf-scripts tsconfig_base.json) so migrated source compiles
+       under the same semantics it was written against. */
+    "strict": true,
+    "strictPropertyInitialization": false
   },
   "include": ["src"]
 }
