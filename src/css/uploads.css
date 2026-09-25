@@ -1,0 +1,950 @@
+/* =========================================================
+   Upload Wizard
+   ========================================================= */
+
+.project-dashboard-upload-wizard {
+    display: flex;
+    flex-direction: row;
+
+    gap: 10px;
+
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    background:
+        transparent;
+}
+
+
+/* =========================================================
+   Upload Wizard Left
+   ========================================================= */
+
+.project-dashboard-upload-wizard-body-left {
+    display: flex;
+    flex: 1;
+
+    min-width: 0;
+    min-height: 0;
+
+    background:
+        #161b22;
+}
+
+
+/* =========================================================
+   Upload Wizard Left - Drop Zone
+   ========================================================= */
+
+.project-dashboard-upload-wizard-drop-zone {
+    display: flex;
+    flex: 1;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    border:
+        2px dashed rgba(255, 255, 255, .25);
+
+    border-radius:
+        8px;
+
+    color:
+        rgba(255, 255, 255, .70);
+
+    cursor: pointer;
+}
+
+/* =========================================================
+   Upload Wizard Left - Drop Zone Hover
+   ========================================================= */
+
+.project-dashboard-upload-wizard-drop-zone:not(.application-disabled):hover {
+    background:
+        rgba(0, 255, 0, .10);
+
+    border-color:
+        rgba(0, 255, 0, .18);
+
+    color:
+        rgba(235, 255, 235, .95);
+}
+
+
+.project-dashboard-upload-wizard-drop-zone:focus-visible {
+    outline:
+        2px solid rgba(0, 255, 0, .55);
+
+    outline-offset:
+        2px;
+}
+
+
+/* =========================================================
+   Upload Wizard Left - Drop Zone Active
+   ========================================================= */
+
+.project-dashboard-upload-wizard-drop-zone-active {
+    border-color:
+        rgba(0, 255, 0, .70);
+
+    background:
+        rgba(0, 255, 0, .05);
+
+    color:
+        rgba(225, 255, 225, .90);
+}
+
+
+/* =========================================================
+   Upload Wizard Left - Drop Zone Text
+   ========================================================= */
+
+.project-dashboard-upload-wizard-drop-zone-text {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 4px;
+}
+
+
+/* =========================================================
+   Upload Wizard Left - Drop Zone Action Text
+   ========================================================= */
+
+.project-dashboard-upload-wizard-drop-zone-action {
+    font-size: 11px;
+
+    color:
+        rgba(255, 255, 255, .45);
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Health
+   ========================================================= */
+
+.project-dashboard-upload-wizard-body-right {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    border-radius:
+        8px;
+
+    color:
+        rgba(255, 255, 255, .70);
+
+    background:
+        #161b22;
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Header
+   ========================================================= */
+
+.project-dashboard-upload-wizard-body-right-header {
+    display: flex;
+    flex: 0 0 110px;
+    flex-direction: column;
+
+    width: 100%;
+    height: 110px;
+
+    min-width: 0;
+    min-height: 110px;
+
+    align-items: stretch;
+
+    box-sizing: border-box;
+
+    flex-shrink: 0;
+
+    background:
+        rgba(255, 255, 255, .03);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .06);
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Header Primary
+   ========================================================= */
+
+.project-dashboard-upload-wizard-body-right-header-primary {
+    display: flex;
+    flex: 0 0 50px;
+
+    width: 100%;
+
+    min-width: 0;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding:
+        0 12px;
+
+    box-sizing: border-box;
+
+    text-align: left;
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Header Primary Text
+   ========================================================= */
+
+.project-dashboard-upload-wizard-body-right-header-primary-text {
+    flex: 1 1 auto;
+
+    min-width: 0;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Header Close
+   ========================================================= */
+
+.project-dashboard-upload-wizard-button-close {
+    display: flex;
+    flex: 0 0 30px;
+
+    width: 30px;
+    height: 30px;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+    background:
+        transparent;
+
+    border:
+        1px solid transparent;
+
+    border-radius:
+        4px;
+
+    color:
+        rgba(255, 90, 90, .90);
+
+    font-family:
+        "Segoe UI", Arial, sans-serif;
+
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Header Close Hover
+   ========================================================= */
+
+.project-dashboard-upload-wizard-button-close:hover {
+    background:
+        rgba(255, 80, 80, .08);
+
+    border-color:
+        rgba(255, 80, 80, .22);
+
+    color:
+        rgba(255, 120, 120, 1);
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Header Tabs
+   ========================================================= */
+
+.project-dashboard-upload-wizard-body-right-header-tabs {
+    display: flex;
+    flex: 0 0 60px;
+
+    width: 100%;
+
+    min-width: 0;
+
+    align-items: flex-end;
+    justify-content: flex-start;
+
+    gap: 8px;
+
+    padding:
+        0 12px 10px 12px;
+
+    box-sizing: border-box;
+
+    text-align: left;
+
+    border-top:
+        1px solid rgba(255, 255, 255, .06);
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Header Tab
+   ========================================================= */
+
+.project-dashboard-upload-wizard-tab {
+    display: flex;
+    flex: 0 0 120px;
+
+    width: 120px;
+    height: 32px;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    padding:
+        0 10px;
+
+    box-sizing: border-box;
+
+    text-align: left;
+
+    border:
+        1px solid rgba(0, 255, 0, .10);
+
+    border-bottom:
+        0;
+
+    border-radius:
+        6px 6px 0 0;
+
+    color:
+        rgba(225, 255, 225, .85);
+
+    background:
+        rgba(0, 255, 0, .05);
+
+    font:
+        inherit;
+
+    cursor:
+        pointer;
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Header Tab Hover
+   ========================================================= */
+
+.project-dashboard-upload-wizard-tab:hover {
+    background:
+        rgba(0, 255, 0, .10);
+
+    border-color:
+        rgba(0, 255, 0, .18);
+
+    color:
+        rgba(235, 255, 235, .95);
+}
+
+
+/* =========================================================
+   Upload Wizard Tab - Selected
+   ========================================================= */
+
+.project-dashboard-upload-wizard-tab-selected {
+    background:
+        rgba(0, 255, 0, .15);
+
+    border-color:
+        rgba(0, 255, 0, .25);
+
+    color:
+        rgba(235, 255, 235, 1);
+}
+
+/* =========================================================
+   Upload Wizard Tab - Error
+   ========================================================= */
+
+.project-dashboard-upload-wizard-tab-error {
+    background:
+        rgba(255, 80, 80, .05);
+
+    border-color:
+        rgba(255, 0, 0, .18);
+
+    color:
+        rgba(255, 0, 0, .35);
+}
+
+
+/* =========================================================
+   Upload Wizard Tab - Error Hover
+   Same Specificity As .tab:hover - Must Follow It In Source
+   Order So The Error Tab Stays Red Instead Of Turning Green
+   ========================================================= */
+
+.project-dashboard-upload-wizard-tab-error:hover {
+    background:
+        rgba(255, 80, 80, .10);
+
+    border-color:
+        rgba(255, 80, 80, .28);
+
+    color:
+        rgba(255, 0, 0, .55);
+}
+
+
+/* =========================================================
+   Upload Wizard Tab - Session Completion Badge
+   Same Circle/Colors As The Overlay Upload Progress Status -
+   Reused Rather Than Invented So Success Always Means The
+   Same Green Everywhere In The Upload Experience
+   ========================================================= */
+
+.project-dashboard-upload-wizard-tab-badge {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 14px;
+    height: 14px;
+
+    flex: 0 0 14px;
+
+    box-sizing: border-box;
+
+    margin-right: 6px;
+
+    border:
+        1px solid rgba(180, 190, 205, .34);
+
+    border-radius:
+        50%;
+
+    font-size: 9px;
+    line-height: 14px;
+
+    color:
+        rgba(205, 214, 224, .72);
+}
+
+
+/* =========================================================
+   Upload Wizard Tab - Session Completion Badge Complete
+   ========================================================= */
+
+.project-dashboard-upload-wizard-tab-badge-complete {
+    border-color:
+        rgba(0, 255, 0, .45);
+
+    background:
+        rgba(0, 255, 0, .14);
+
+    color:
+        rgba(150, 255, 150, .95);
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Body
+   ========================================================= */
+
+.project-dashboard-upload-wizard-body-right-body {
+    flex: 1 1 0;
+
+    min-width: 0;
+    min-height: 0;
+
+    padding:
+        0 10px 30px 10px;
+
+    box-sizing: border-box;
+
+    overflow-y:
+        auto;
+
+    scrollbar-gutter:
+        stable;
+}
+
+
+/* =========================================================
+   Upload Wizard Right - Footer
+   ========================================================= */
+
+.project-dashboard-upload-wizard-body-right-footer {
+    display: flex;
+    flex: 0 0 50px;
+
+    height: 50px;
+
+    min-height: 50px;
+    max-height: 50px;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    padding:
+        0 12px;
+
+    box-sizing: border-box;
+
+    flex-shrink: 0;
+
+    background:
+        rgba(255, 255, 255, .03);
+
+    border-top:
+        1px solid rgba(255, 255, 255, .06);
+}
+
+
+/* =========================================================
+   Upload Wizard Buttons
+   ========================================================= */
+
+.project-dashboard-upload-wizard-button {
+    min-width: 125px;
+
+    height: 34px;
+
+    padding:
+        0 16px;
+
+    border:
+        1px solid rgba(255, 255, 255, .10);
+
+    border-radius:
+        4px;
+
+    background:
+        rgba(255, 255, 255, .05);
+
+    font-family:
+        "Segoe UI", Arial, sans-serif;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor:
+        pointer;
+}
+
+
+/* =========================================================
+   Create Version
+   ========================================================= */
+
+.project-dashboard-upload-wizard-button-create {
+    background:
+        rgba(0, 255, 0, .05);
+
+    border-color:
+        rgba(0, 255, 0, .18);
+
+    color:
+        rgba(225, 255, 225, .90);
+}
+
+
+.project-dashboard-upload-wizard-button-create:not(.application-disabled):hover {
+    background:
+        rgba(0, 255, 0, .10);
+}
+
+
+/* =========================================================
+   Cancel
+   ========================================================= */
+
+.project-dashboard-upload-wizard-button-cancel {
+    color:
+        rgba(255, 110, 110, .90);
+}
+
+
+.project-dashboard-upload-wizard-button-cancel:not(.application-disabled):hover {
+    background:
+        rgba(255, 80, 80, .06);
+
+    border-color:
+        rgba(255, 80, 80, .18);
+}
+
+
+/* =========================================================
+   Upload Wizard Button - Clear
+   ========================================================= */
+
+.project-dashboard-upload-wizard-button-clear {
+    background:
+        rgba(255, 255, 255, .03);
+
+    border:
+        1px solid rgba(255, 255, 255, .08);
+
+    color:
+        rgba(255, 255, 255, .60);
+}
+
+
+.project-dashboard-upload-wizard-button-clear:not(.application-disabled):hover {
+    background:
+        rgba(255, 255, 255, .07);
+
+    border-color:
+        rgba(255, 255, 255, .14);
+
+    color:
+        rgba(255, 255, 255, .90);
+}
+
+
+/* =========================================================
+   Upload Wizard Footer Separator
+   ========================================================= */
+
+.project-dashboard-upload-wizard-footer-separator {
+    width: 1px;
+    height: 22px;
+
+    margin:
+        0 4px;
+
+    background:
+        rgba(255, 255, 255, .10);
+}
+
+
+/* =========================================================
+   Health Table
+   ========================================================= */
+
+.project-dashboard-upload-wizard-health-table {
+    width: 100%;
+
+    border-collapse:
+        collapse;
+
+    table-layout:
+        fixed;
+
+    margin-top:
+        0;
+
+    margin-bottom:
+        50px;
+
+    font-size:
+        11px;
+}
+
+
+/* =========================================================
+   Health Table Header
+   ========================================================= */
+
+.project-dashboard-upload-wizard-health-table thead th {
+    position:
+        sticky;
+
+    top:
+        0;
+
+    z-index:
+        2;
+
+    height:
+        38px;
+
+    padding:
+        0 10px;
+
+    text-align:
+        left;
+
+    font-weight:
+        600;
+
+    background:
+        #151a21;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .12);
+}
+
+
+/* =========================================================
+   Health Table Rows
+   ========================================================= */
+
+.project-dashboard-upload-wizard-health-table tbody td {
+    height:
+        30px;
+
+    padding:
+        0 10px;
+
+    vertical-align:
+        middle;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .05);
+}
+
+
+/* =========================================================
+   Health Table Row Hover
+   ========================================================= */
+
+.project-dashboard-upload-wizard-health-table tbody tr:hover {
+    background:
+        rgba(255, 255, 255, .035);
+}
+
+
+/* =========================================================
+   Health Table Column Widths
+   ========================================================= */
+
+.project-dashboard-upload-wizard-health-table th:nth-child(1),
+.project-dashboard-upload-wizard-health-table td:nth-child(1) {
+    width:
+        42%;
+}
+
+
+.project-dashboard-upload-wizard-health-table th:nth-child(2),
+.project-dashboard-upload-wizard-health-table td:nth-child(2) {
+    width:
+        14%;
+}
+
+
+.project-dashboard-upload-wizard-health-table th:nth-child(3),
+.project-dashboard-upload-wizard-health-table td:nth-child(3) {
+    width:
+        18%;
+}
+
+
+.project-dashboard-upload-wizard-health-table th:nth-child(4),
+.project-dashboard-upload-wizard-health-table td:nth-child(4) {
+    width:
+        13%;
+}
+
+
+.project-dashboard-upload-wizard-health-table th:nth-child(5),
+.project-dashboard-upload-wizard-health-table td:nth-child(5) {
+    width:
+        13%;
+}
+
+
+/* =========================================================
+   Health Table Status
+   ========================================================= */
+
+.project-dashboard-health-status-pass {
+    color:
+        #00ff66;
+
+    font-size:
+        16px;
+
+    font-weight:
+        700;
+
+    text-align:
+        center;
+}
+
+
+.project-dashboard-health-status-fail {
+    color:
+        #ff5c5c;
+
+    font-size:
+        16px;
+
+    font-weight:
+        700;
+
+    text-align:
+        center;
+}
+
+
+/* =========================================================
+   Health Table Column Alignment
+   ========================================================= */
+
+.project-dashboard-upload-wizard-health-table th:nth-child(2),
+.project-dashboard-upload-wizard-health-table td:nth-child(2),
+.project-dashboard-upload-wizard-health-table th:nth-child(3),
+.project-dashboard-upload-wizard-health-table td:nth-child(3) {
+    text-align:
+        center;
+}
+
+
+/* =========================================================
+   Processing Overlay
+   ========================================================= */
+
+.project-dashboard-overlay {
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        10px;
+
+    background:
+        rgba(0, 0, 0, .35);
+
+    z-index:
+        10001;
+
+    pointer-events:
+        auto;
+}
+
+
+/* =========================================================
+   Processing Spinner
+   ========================================================= */
+
+.project-dashboard-overlay-processing-spinner {
+    width:
+        28px;
+
+    height:
+        28px;
+
+    border:
+        3px solid rgba(255, 255, 255, .20);
+
+    border-top-color:
+        rgba(255, 255, 255, .90);
+
+    border-radius:
+        50%;
+
+    animation:
+        project-dashboard-processing-spin
+        .8s
+        linear
+        infinite;
+}
+
+
+/* =========================================================
+   Processing Text
+   ========================================================= */
+
+.project-dashboard-overlay-processing-progress {
+    color:
+        rgba(255, 255, 255, .90);
+
+    font-size:
+        12px;
+
+    font-weight:
+        600;
+}
+
+
+/* =========================================================
+   Processing Spinner Animation
+   ========================================================= */
+
+@keyframes project-dashboard-processing-spin {
+
+    from {
+
+        transform:
+            rotate(0deg);
+
+    }
+
+    to {
+
+        transform:
+            rotate(360deg);
+
+    }
+
+}
+
+
+/* =========================================================
+   Health Table Status - Not Loaded
+   ========================================================= */
+
+.project-dashboard-health-status-not-loaded {
+    color:
+        rgba(255, 255, 255, .45);
+
+    font-size:
+        11px;
+
+    font-weight:
+        500;
+
+    text-align:
+        center;
+}

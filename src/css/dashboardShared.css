@@ -1,0 +1,117 @@
+/* =========================================================
+   Dashboard Shared Shell
+
+   ctrDashboard
+      ctrDashboardHeader
+      ctrDashboardBody
+         Active Dashboard
+      ctrDashboardFooter
+   ========================================================= */
+
+.project-dashboard-shared {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+
+    width: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    background: transparent;
+}
+
+
+/* =========================================================
+   Dashboard Shared Header
+   ========================================================= */
+
+.project-dashboard-shared-header {
+    display: flex;
+    flex: 0 0 auto;
+
+    width: 100%;
+    min-width: 0;
+
+    align-items: center;
+
+    padding: 8px 12px;
+
+    box-sizing: border-box;
+
+    background: #161b22;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .08);
+}
+
+.project-dashboard-tabs-header {
+    border-bottom: 1px solid rgba(180, 190, 205, .22);
+}
+
+
+/* =========================================================
+   Dashboard Shared Body
+   Active Dashboard Mount Point
+   ========================================================= */
+
+.project-dashboard-shared-body {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+
+    width: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    background: transparent;
+}
+
+.project-dashboard-slot-zero,
+.project-dashboard-slot-one,
+.project-dashboard-slot-two,
+.project-dashboard-slot-three,
+.project-dashboard-slot-four,
+.project-dashboard-slot-five,
+.project-dashboard-slot-six,
+.project-dashboard-slot-seven,
+.project-dashboard-slot-eight,
+.project-dashboard-slot-nine {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+
+    width: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+/* =========================================================
+   Dashboard Shared Footer
+   ========================================================= */
+
+.project-dashboard-shared-footer {
+    display: flex;
+    flex: 0 0 auto;
+
+    width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    background: #161b22;
+}

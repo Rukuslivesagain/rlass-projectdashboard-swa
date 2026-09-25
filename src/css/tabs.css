@@ -1,0 +1,60 @@
+/* =========================================================
+   Tabs Header
+   ========================================================= */
+.project-dashboard-tabs-header {
+    display: flex;
+    flex: 0 0 50px;
+    width: 100%;
+    height: 50px;
+    min-width: 0;
+    min-height: 50px;
+    max-height: 50px;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 0 12px 10px 12px;
+    box-sizing: border-box;
+    text-align: left;
+    flex-shrink: 0;
+}
+
+/* =========================================================
+   Tabs - Tab
+   ========================================================= */
+.project-dashboard-tabs-tab {
+    display: flex;
+    flex: 0 0 120px;
+    width: 120px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 10px;
+    box-sizing: border-box;
+    text-align: left;
+    border: 1px solid rgba(0, 255, 0, .10);
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    color: rgba(225, 255, 225, .85);
+    background: rgba(0, 255, 0, .05);
+    font: inherit;
+    cursor: pointer;
+}
+
+/* =========================================================
+   Tabs - Tab Hover
+   ========================================================= */
+.project-dashboard-tabs-tab:hover {
+    background: rgba(0, 255, 0, .10);
+    border-color: rgba(0, 255, 0, .18);
+    color: rgba(235, 255, 235, .95);
+}
+
+/* =========================================================
+   Tabs - Selected
+   ========================================================= */
+.project-dashboard-tabs-tab-selected {
+    background: rgba(0, 255, 0, .15);
+    border-color: rgba(0, 255, 0, .25);
+    color: rgba(235, 255, 235, 1);
+}

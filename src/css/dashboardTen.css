@@ -1,0 +1,1185 @@
+/* =========================================================
+   Dashboard Ten
+
+   Primary Structure
+   ---------------------------------------------------------
+   ctrDashboardTen
+      Header
+      Body
+         Body Left
+            Header
+            Body
+            Footer
+         Body Right
+            Header
+               Title
+               Map Toolbar
+            Body
+               Map Viewport
+                  Map Stage
+                     Spatial Layers
+            Footer
+      Footer
+
+   Map Layer Order
+   ---------------------------------------------------------
+   Satellite
+   Plot
+   Primary Grid
+      Primary Cell Containers
+         Progressive Sub Grid Cells
+   Jobs
+   Heat
+
+   Scroll Ownership
+   ---------------------------------------------------------
+   Body Left Body
+      Vertical
+
+   Body Right Body
+      Map Viewport
+
+   Alignment Contract
+   ---------------------------------------------------------
+   Left / Right Headers
+      Same Height
+
+   Left / Right Bodies
+      Same Effective Viewport Height
+
+   Left / Right Footers
+      Same Height
+   ========================================================= */
+
+
+/* =========================================================
+   1 - DASHBOARD ROOT
+   ========================================================= */
+
+/* =========================================================
+   Dashboard Ten
+   ========================================================= */
+
+.project-dashboard-ten {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+
+    width: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+      2 - APPLICATION HEADER
+   ========================================================= */
+
+/* =========================================================
+   Dashboard Ten - Header
+   ========================================================= */
+
+.project-dashboard-ten-header {
+    display: flex;
+    flex: 0 0 auto;
+
+    width: 100%;
+
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .08);
+}
+
+
+/* =========================================================
+      3 - PRIMARY BODY LAYOUT
+   ========================================================= */
+
+/* =========================================================
+   Dashboard Ten - Body
+   ========================================================= */
+
+.project-dashboard-ten-body {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: row;
+
+    width: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+      4 - LEFT MAP SELECTOR REGION
+   ========================================================= */
+
+/* =========================================================
+   Dashboard Ten - Body Left
+   Map Selector Region
+   ========================================================= */
+
+.project-dashboard-ten-body-left {
+    display: flex;
+    flex: 0 0 180px;
+    flex-direction: column;
+
+    width: 180px;
+
+    min-width: 180px;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    border-right:
+        1px solid rgba(255, 255, 255, .08);
+}
+
+
+/* =========================================================
+   Dashboard Ten - Body Left Header
+   ========================================================= */
+
+.project-dashboard-ten-body-left-header {
+    display: flex;
+    flex: 0 0 48px;
+
+    width: 100%;
+    height: 48px;
+
+    min-width: 0;
+    min-height: 48px;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 6px;
+
+    padding: 0 10px;
+
+    box-sizing: border-box;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .08);
+}
+
+
+/* =========================================================
+   Dashboard Ten - Body Left Header Title
+   ========================================================= */
+
+.project-dashboard-ten-body-left-header-title {
+    color:
+        #f0f6fc;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Body Left Body
+   Vertical Scroll Owner
+   ========================================================= */
+
+.project-dashboard-ten-body-left-body {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+
+    width: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    margin-bottom: 13px;
+
+    box-sizing: border-box;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Body Left Footer
+   ========================================================= */
+
+.project-dashboard-ten-body-left-footer {
+    display: flex;
+    flex: 0 0 14px;
+
+    width: 100%;
+    height: 14px;
+
+    min-width: 0;
+    min-height: 14px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+      5 - RIGHT MAP REGION
+   ========================================================= */
+
+/* =========================================================
+   Dashboard Ten - Body Right
+   Map Region
+   ========================================================= */
+
+.project-dashboard-ten-body-right {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+
+    width: auto;
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Body Right Header
+   ========================================================= */
+
+.project-dashboard-ten-body-right-header {
+    display: flex;
+    flex: 0 0 48px;
+
+    width: 100%;
+    height: 48px;
+
+    min-width: 0;
+    min-height: 48px;
+
+    align-items: center;
+
+    padding: 0 10px;
+
+    box-sizing: border-box;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .08);
+}
+
+/* =========================================================
+   Dashboard Ten - Body Right Header Left
+   ========================================================= */
+
+.project-dashboard-ten-body-right-header-left {
+    display: flex;
+    flex: 0 0 auto;
+
+    min-width: 0;
+
+    align-items: center;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Body Right Header Right
+   ========================================================= */
+
+.project-dashboard-ten-body-right-header-right {
+    display: flex;
+    flex: 1 1 0;
+
+    min-width: 0;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Body Right Header Title
+   ========================================================= */
+
+.project-dashboard-ten-body-right-header-title {
+    flex: 0 0 auto;
+
+    color:
+        #f0f6fc;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Map Toolbar
+   Single Header-Right Control Contract
+   ========================================================= */
+
+.project-dashboard-ten-map-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    min-width: 0;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.project-dashboard-ten-map-toolbar-group {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.project-dashboard-ten-map-toolbar-control {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    gap: 5px;
+    box-sizing: border-box;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 4px;
+    color: rgba(238, 242, 247, .85);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+}
+
+button.project-dashboard-ten-map-toolbar-control {
+    padding: 0;
+    font-size: 18px;
+}
+
+.project-dashboard-ten-map-toolbar-control svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+}
+
+.project-dashboard-ten-map-toolbar-control input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.project-dashboard-ten-map-toolbar-control:hover {
+    background: rgba(255, 255, 255, .08);
+}
+
+.project-dashboard-ten-map-toolbar-control:has(input:checked) {
+    background: rgba(0, 255, 0, .10);
+    border-color: rgba(0, 255, 0, .18);
+    color: rgba(225, 255, 225, .95);
+}
+
+.project-dashboard-ten-map-toolbar-control:has(input:disabled),
+.project-dashboard-ten-map-toolbar-control:disabled {
+    opacity: .45;
+    cursor: default;
+}
+
+.project-dashboard-ten-map-toolbar-control:has(input:disabled):hover,
+.project-dashboard-ten-map-toolbar-control:disabled:hover {
+    background: transparent;
+}
+
+.project-dashboard-ten-map-toolbar-separator {
+    display: block;
+    flex: 0 0 1px;
+    width: 1px;
+    height: 20px;
+    margin: 0 4px;
+    background: rgba(255, 255, 255, .16);
+    font-size: 0;
+    line-height: 0;
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Body Right Body
+   Map Viewport Host
+   ========================================================= */
+
+.project-dashboard-ten-body-right-body {
+    position: relative;
+
+    display: flex;
+    flex: 1 1 0;
+
+    min-width: 0;
+    min-height: 0;
+
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+      6 - MAP VIEWPORT / STAGE / SPATIAL LAYERS
+   ========================================================= */
+
+/* =========================================================
+   Dashboard Ten - Map Viewport
+   Screen-Space Host
+   ========================================================= */
+
+.project-dashboard-ten-body-right-body-map-viewport {
+    position: relative;
+
+    display: flex;
+    flex: 1 1 0;
+
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Map Stage
+   Native Map Coordinate Space
+   ========================================================= */
+
+.project-dashboard-ten-body-right-body-map-stage {
+    position: relative;
+
+    flex: 0 0 auto;
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    transform-origin:
+        center center;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Map Layer
+   Shared Spatial Layer Contract
+   ========================================================= */
+
+.project-dashboard-ten-map-layer {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Plot Layer
+   Render Surface
+   ========================================================= */
+
+.project-dashboard-ten-body-right-body-map-stage-plot {
+    position: absolute;
+
+    inset: 0;
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Primary Grid Lines
+   ========================================================= */
+
+.project-dashboard-ten-primary-grid-line {
+    position: absolute;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(255, 0, 0, .85);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Primary Grid Vertical Line
+   ========================================================= */
+
+.project-dashboard-ten-primary-grid-line-vertical {
+    top: 0;
+
+    width: 1px;
+    height: 100%;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Primary Grid Horizontal Line
+   ========================================================= */
+
+.project-dashboard-ten-primary-grid-line-horizontal {
+    left: 0;
+
+    width: 100%;
+    height: 1px;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Primary Grid Labels
+   ========================================================= */
+
+.project-dashboard-ten-primary-grid-label {
+    position: absolute;
+
+    transform:
+        translate(-50%, -50%);
+
+    box-sizing: border-box;
+
+    pointer-events: none;
+
+    color:
+        rgba(255, 0, 0, .95);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    text-align: center;
+
+    text-shadow:
+        0 1px 3px rgba(0, 0, 0, .95);
+}
+
+
+/* =========================================================
+   Dashboard Ten - Map Grid Interaction Cell
+   ========================================================= */
+
+.project-dashboard-ten-map-grid-cell {
+    position: absolute;
+
+    box-sizing: border-box;
+
+    overflow:
+        hidden;
+
+    background:
+        transparent;
+
+    cursor:
+        pointer;
+
+    pointer-events:
+        auto;
+}
+
+/* =========================================================
+   Dashboard Ten - Progressive Sub Grid Cell
+   Primary-Cell-Owned Fine Spatial Interaction Surface
+
+   The Primary Grid cell is the parent container.
+
+   At Zoom 5+ TypeScript lazily changes the hovered Primary
+   cell to a CSS Grid host and appends the Progressive Sub
+   Grid cells as local children.
+
+   IMPORTANT:
+   - Sub Grid cells own no map-space coordinates.
+   - Sub Grid cells own no viewport-space coordinates.
+   - CSS Grid places and sizes the children inside the exact
+     Primary cell rectangle.
+   - Zoom and pan therefore move parent and children together.
+   ========================================================= */
+
+.project-dashboard-ten-map-sub-grid-cell {
+    position:
+        relative;
+
+    min-width:
+        0;
+
+    min-height:
+        0;
+
+    box-sizing:
+        border-box;
+
+    background:
+        transparent;
+
+    border:
+        var(
+            --dashboard-ten-sub-grid-border-width,
+            .25px
+        )
+        solid
+        rgba(0, 0, 0, .22);
+
+    pointer-events:
+        auto;
+
+    cursor:
+        pointer;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Sub Grid Lines Hidden
+   Interaction remains active while grid visuals are hidden.
+   ========================================================= */
+
+.project-dashboard-ten-map-sub-grid-cell-lines-hidden {
+    border-color:
+        transparent;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Sub Grid Cell Hover
+   ========================================================= */
+
+.project-dashboard-ten-map-sub-grid-cell:hover {
+    background:
+        rgba(255, 255, 0, .18);
+}
+
+
+/* =========================================================
+      7 - MAP SELECTOR COMPONENTS
+   ========================================================= */
+
+/* =========================================================
+   Dashboard Ten - Maps
+   Map Selector Collection
+   ========================================================= */
+
+.project-dashboard-ten-maps {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    min-width: 0;
+
+    padding: 6px;
+
+    gap: 4px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Map Selector
+   ========================================================= */
+
+.project-dashboard-ten-map-selector {
+    display: flex;
+
+    width: 100%;
+
+    min-width: 0;
+
+    align-items: center;
+
+    padding: 8px 10px;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    border:
+        1px solid rgba(255, 255, 255, .06);
+
+    border-radius: 4px;
+
+    color:
+        rgba(238, 242, 247, .85);
+
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    user-select: none;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Map Selector Hover
+   ========================================================= */
+
+.project-dashboard-ten-map-selector:hover {
+    background:
+        rgba(255, 255, 255, .06);
+}
+
+
+/* =========================================================
+   Dashboard Ten - Selected Map
+   ========================================================= */
+
+.project-dashboard-ten-map-selector-selected {
+    background:
+        rgba(0, 255, 0, .10);
+
+    border:
+        1px solid rgba(0, 255, 0, .18);
+
+    color:
+        rgba(225, 255, 225, .95);
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Body Right Footer
+   ========================================================= */
+
+.project-dashboard-ten-body-right-footer {
+    display: flex;
+    flex: 0 0 14px;
+
+    height: 14px;
+
+    min-height: 14px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Footer
+   ========================================================= */
+
+.project-dashboard-ten-footer {
+    display: flex;
+    flex: 0 0 auto;
+
+    width: 100%;
+
+    min-width: 0;
+
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   9 - MAP INTERACTION STATES
+   ========================================================= */
+
+.project-dashboard-ten-map-grid-cell-selectable:hover {
+    background:
+        rgba(255, 255, 0, .08);
+}
+
+.project-dashboard-ten-map-grid-cell-selected {
+    background:
+        rgba(255, 255, 0, .16);
+}
+
+/* =========================================================
+   Dashboard Ten - Map Grid Cell Select Hover
+   ========================================================= */
+
+.project-dashboard-ten-map-grid-cell-hover {
+    background:
+        rgba(255, 255, 0, .35);
+}
+
+
+/* =========================================================
+   Dashboard Ten - Map Toolbar Checkbox Alignment
+   ========================================================= */
+
+.project-dashboard-ten-layer-checkbox-label {
+    display: inline-flex;
+    flex: 0 0 auto;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #ffffff;
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+    user-select: none;
+}
+
+.project-dashboard-ten-layer-checkbox-label > .project-dashboard-ten-layer-checkbox {
+    flex: 0 0 auto;
+
+    margin: 0;
+
+    vertical-align: middle;
+}
+
+.project-dashboard-ten-layer-checkbox-label:has(
+    > .project-dashboard-ten-layer-checkbox:disabled
+) {
+    cursor: default;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Level 9 Sub Grid Address Label Canvas
+   ========================================================= */
+
+.project-dashboard-ten-map-sub-grid-label-canvas {
+    position: absolute;
+
+    inset: 0;
+
+    display: block;
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   Dashboard Ten - Developer Map Registration Tool
+   ========================================================= */
+
+.project-dashboard-ten-map-registration-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 30;
+    overflow: visible;
+    pointer-events: none;
+    touch-action: none;
+}
+
+.project-dashboard-ten-map-registration-shape {
+    fill: rgba(255, 255, 0, .10);
+    stroke: rgba(255, 255, 0, .95);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+    pointer-events: all;
+    cursor: move;
+}
+
+.project-dashboard-ten-map-registration-handle {
+    fill: #ffffff;
+    stroke: rgba(255, 255, 0, 1);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+    pointer-events: all;
+    cursor: crosshair;
+}
+
+.project-dashboard-ten-map-registration-edit-button {
+    padding: 0 8px !important;
+    font-size: 11px !important;
+}
+
+/* =========================================================
+   10 - PLACES FILTER PANE
+   Existing left-body owner is reused by Places mode.
+   These selectors intentionally target only checkbox-backed
+   map-selector rows so normal map selector rows are unchanged.
+   ========================================================= */
+
+/* =========================================================
+   Dashboard Ten - Places Filter Group Heading
+   ========================================================= */
+
+.project-dashboard-ten-maps > div {
+    flex: 0 0 auto;
+
+    width: 100%;
+
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    font-size: 11px;
+    line-height: 1.2;
+
+    text-transform: none;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Places Filter Row
+   ========================================================= */
+
+label.project-dashboard-ten-map-selector:has(
+    > .project-dashboard-ten-layer-checkbox
+) {
+    flex: 0 0 auto;
+
+    min-height: 36px;
+
+    align-items: center;
+
+    padding: 9px 10px;
+
+    gap: 10px;
+
+    line-height: 1.25;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Places Filter Checkbox
+   ========================================================= */
+
+label.project-dashboard-ten-map-selector
+> .project-dashboard-ten-layer-checkbox {
+    flex: 0 0 auto;
+
+    width: 14px;
+    height: 14px;
+
+    margin: 0;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Places Filter Row Hover
+   ========================================================= */
+
+label.project-dashboard-ten-map-selector:has(
+    > .project-dashboard-ten-layer-checkbox
+):hover {
+    background:
+        rgba(255, 255, 255, .06);
+}
+
+
+/* =========================================================
+   Dashboard Ten - Places Filter Selected Row
+   Checkbox selection is filtering / visibility state only.
+   ========================================================= */
+
+label.project-dashboard-ten-map-selector:has(
+    > .project-dashboard-ten-layer-checkbox:checked
+) {
+    background:
+        rgba(0, 255, 0, .06);
+
+    border-color:
+        rgba(0, 255, 0, .14);
+}
+
+
+
+/* =========================================================
+   Dashboard Ten - Map Layer Checkbox Group
+   Owns spacing between all map-layer checkbox controls.
+   ========================================================= */
+
+.project-dashboard-ten-map-layer-checkbox-group {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.project-dashboard-ten-map-layer-checkbox-group
+.project-dashboard-ten-layer-checkbox-label {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    white-space: nowrap;
+    cursor: default;
+}
+
+.project-dashboard-ten-map-layer-checkbox-group
+.project-dashboard-ten-layer-checkbox {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.project-dashboard-ten-map-layer-checkbox-group
+.project-dashboard-ten-map-toolbar-separator {
+    margin: 0;
+}
+
+
+/* =========================================================
+   Dashboard Ten - Places Filter
+   ========================================================= */
+
+.project-dashboard-ten-places-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px 12px 10px;
+}
+
+.project-dashboard-ten-place-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.project-dashboard-ten-place-filter-group-title {
+    padding: 0 2px 2px 2px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, .72);
+}
+
+.project-dashboard-ten-place-filter-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    min-height: 36px;
+    box-sizing: border-box;
+}
+
+.project-dashboard-ten-place-filter-checkbox {
+    flex: 0 0 auto;
+    align-self: center;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.project-dashboard-ten-place-filter-action {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    min-width: 0;
+    padding: 8px 10px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, .10);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, .025);
+    color: #ffffff;
+
+    cursor: pointer;
+}
+
+.project-dashboard-ten-place-filter-action:hover {
+    background: rgba(255, 255, 255, .06);
+    border-color: rgba(255, 255, 255, .18);
+}
+
+
+/* =========================================================
+   Dashboard Ten - Location Place Map Overlays
+   ========================================================= */
+
+.project-dashboard-ten-location-place-overlay {
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+.project-dashboard-ten-location-place-overlay-interactive {
+    pointer-events: auto;
+}
+
+.project-dashboard-ten-location-place-overlay-parent-event {
+    border: 4px dashed rgba(255, 0, 0, .90);
+    background: transparent;
+}
+
+.project-dashboard-ten-location-place-overlay-parent-unit {
+    border: 1px solid rgba(255, 220, 0, .70);
+    background:
+        rgba(
+            255,
+            220,
+            0,
+            var(
+                --dashboard-ten-location-place-unit-alpha,
+                .40
+            )
+        );
+}
+
+.project-dashboard-ten-location-place-overlay-error {
+    border: 1px solid rgba(255, 255, 255, .65);
+    background: rgba(255, 255, 255, .08);
+}

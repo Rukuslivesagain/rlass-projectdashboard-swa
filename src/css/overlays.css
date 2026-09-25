@@ -1,0 +1,1172 @@
+/* =========================================================
+   Overlay
+   ========================================================= */
+
+.project-dashboard-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(0, 0, 0, .55);
+
+    z-index: 10000;
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   Dashboard Modal Open
+   ========================================================= */
+
+.project-dashboard-overlay-open {
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   Overlay - Panel
+   ========================================================= */
+
+.project-dashboard-overlay-panel {
+    display: flex;
+    flex-direction: column;
+
+    width: 520px;
+    height:
+        var(--project-dashboard-overlay-panel-height, 600px);
+
+    min-width: 0;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    background:
+        #161b22;
+
+    border:
+        1px solid rgba(255, 255, 255, .10);
+
+    border-radius:
+        8px;
+
+    box-shadow:
+        0 12px 32px rgba(0, 0, 0, .35);
+
+    overflow: hidden;
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   Overlay - Panel - Schedule Create Version
+   Additional Height For Schedule Type Section
+   ========================================================= */
+
+.project-dashboard-overlay-panel-schedule {
+    --project-dashboard-overlay-panel-height: 680px;
+}
+
+
+/* =========================================================
+   Overlay - Header
+   ========================================================= */
+
+.project-dashboard-overlay-header {
+    display: flex;
+    flex: 0 0 50px;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    min-width: 0;
+
+    padding: 0 16px;
+
+    box-sizing: border-box;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .06);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color:
+        rgba(255, 255, 255, .90);
+}
+
+
+/* =========================================================
+   Overlay - Body
+   ========================================================= */
+
+.project-dashboard-overlay-body {
+    flex: 1 1 0;
+
+    min-width: 0;
+    min-height: 0;
+
+    padding: 16px;
+
+    box-sizing: border-box;
+
+    overflow: auto;
+
+    scrollbar-gutter: stable;
+}
+
+
+/* =========================================================
+   Overlay - Footer
+   ========================================================= */
+
+.project-dashboard-overlay-footer {
+    display: flex;
+    flex: 0 0 50px;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 12px;
+
+    box-sizing: border-box;
+
+    border-top:
+        1px solid rgba(255, 255, 255, .06);
+}
+
+
+/* =========================================================
+   Overlay - Buttons
+   ========================================================= */
+
+.project-dashboard-overlay-save,
+.project-dashboard-overlay-cancel {
+    width: 90px;
+}
+
+
+/* =========================================================
+   Settings - Overlay Panel
+   ========================================================= */
+
+.project-dashboard-settings-overlay
+.project-dashboard-overlay-panel {
+    height: 600px;
+}
+
+
+/* =========================================================
+   Settings - Fields
+   ========================================================= */
+
+.project-dashboard-settings-fields {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+
+    gap: 8px;
+
+    width: 100%;
+    height: 100%;
+
+    min-height: 0;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   Settings - Label
+   ========================================================= */
+
+.project-dashboard-settings-label {
+    font-size: 12px;
+    font-weight: 600;
+
+    color:
+        rgba(255, 255, 255, .75);
+}
+
+
+/* =========================================================
+   Settings - Select
+   ========================================================= */
+
+.project-dashboard-settings-select {
+    width: 100%;
+    height: 32px;
+
+    padding: 0 8px;
+
+    box-sizing: border-box;
+
+    background:
+        #0d1117;
+
+    border:
+        1px solid rgba(255, 255, 255, .12);
+
+    border-radius:
+        4px;
+
+    color:
+        rgba(255, 255, 255, .90);
+}
+
+
+.project-dashboard-settings-select:disabled {
+    opacity: .45;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   Overlay - Upload Summary
+   ========================================================= */
+
+.project-dashboard-overlay-upload-summary {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+
+    width: 100%;
+
+    padding: 0 0 12px 0;
+
+    box-sizing: border-box;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .08);
+
+    font-size: 12px;
+
+    color:
+        rgba(235, 240, 246, .90);
+}
+
+
+/* =========================================================
+   Overlay - Upload Summary Row
+   ========================================================= */
+
+.project-dashboard-overlay-upload-summary-row {
+    min-width: 0;
+    min-height: 18px;
+
+    color:
+        rgba(235, 240, 246, .88);
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   Overlay - Schedule Type Section
+   ========================================================= */
+
+.project-dashboard-overlay-schedule-type-section {
+    width: 100%;
+
+    padding: 12px 0;
+
+    box-sizing: border-box;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .08);
+}
+
+
+/* =========================================================
+   Overlay - Schedule Type Heading
+   ========================================================= */
+
+.project-dashboard-overlay-schedule-type-heading {
+    margin: 0 0 8px 0;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color:
+        rgba(255, 255, 255, .75);
+}
+
+
+/* =========================================================
+   Overlay - Schedule Type Row
+   ========================================================= */
+
+.project-dashboard-overlay-schedule-type-row {
+    display: flex;
+
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 20px;
+}
+
+
+/* =========================================================
+   Overlay - Schedule Type Label
+   ========================================================= */
+
+.project-dashboard-overlay-schedule-type-label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    font-size: 12px;
+
+    color:
+        rgba(235, 240, 246, .88);
+
+    cursor: pointer;
+
+    user-select: none;
+}
+
+
+/* =========================================================
+   Overlay - Schedule Type Radio
+   ========================================================= */
+
+.project-dashboard-overlay-schedule-type-radio {
+    margin: 0;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   Overlay - Schedule Baseline Select
+   ========================================================= */
+
+.project-dashboard-overlay-schedule-baseline-select {
+    height: 30px;
+
+    padding: 0 8px;
+
+    box-sizing: border-box;
+
+    background:
+        #0d1117;
+
+    border:
+        1px solid rgba(255, 255, 255, .12);
+
+    border-radius:
+        4px;
+
+    color:
+        rgba(255, 255, 255, .90);
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   Overlay - Schedule Baseline Availability Message
+   ========================================================= */
+
+.project-dashboard-overlay-schedule-baseline-message {
+    margin-top: 8px;
+
+    font-size: 11px;
+
+    color:
+        rgba(235, 240, 246, .70);
+}
+
+
+/* =========================================================
+   Overlay - Schedule Baseline Availability Message - Success
+   ========================================================= */
+
+.project-dashboard-overlay-schedule-baseline-message-success {
+    color:
+        rgba(150, 255, 150, .95);
+}
+
+
+/* =========================================================
+   Overlay - Schedule Baseline Availability Message - Error
+   ========================================================= */
+
+.project-dashboard-overlay-schedule-baseline-message-error {
+    color: #ff6b6b;
+}
+
+
+/* =========================================================
+   Overlay - Schedule Version Outcome Section
+   ========================================================= */
+
+.project-dashboard-overlay-schedule-version-outcome-section {
+    margin-top: 12px;
+
+    padding-top: 12px;
+
+    border-top:
+        1px solid rgba(255, 255, 255, .08);
+}
+
+
+/* =========================================================
+   Overlay - Upload Progress
+   ========================================================= */
+
+.project-dashboard-overlay-upload-progress {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    width: 100%;
+
+    padding: 14px 0 0 0;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   Overlay - Upload Progress Step
+   ========================================================= */
+
+.project-dashboard-overlay-upload-progress-step {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-width: 0;
+    min-height: 18px;
+
+    font-size: 12px;
+
+    color:
+        rgba(205, 214, 224, .76);
+}
+
+
+/* =========================================================
+   Overlay - Upload Progress Status
+   ========================================================= */
+
+.project-dashboard-overlay-upload-progress-status {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 14px;
+    height: 14px;
+
+    flex: 0 0 14px;
+
+    box-sizing: border-box;
+
+    border:
+        1px solid rgba(180, 190, 205, .34);
+
+    border-radius:
+        50%;
+
+    font-size: 9px;
+    line-height: 14px;
+
+    color:
+        rgba(205, 214, 224, .72);
+}
+
+
+/* =========================================================
+   Overlay - Upload Progress Text
+   ========================================================= */
+
+.project-dashboard-overlay-upload-progress-text {
+    min-width: 0;
+
+    color: inherit;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   Overlay - Upload Progress Step Active
+   ========================================================= */
+
+.project-dashboard-overlay-upload-progress-step-active {
+    color:
+        rgba(235, 240, 246, .96);
+}
+
+
+.project-dashboard-overlay-upload-progress-step-active
+.project-dashboard-overlay-upload-progress-status {
+    border-color:
+        rgba(0, 255, 0, .55);
+
+    background:
+        rgba(0, 255, 0, .10);
+
+    color:
+        rgba(150, 255, 150, .95);
+}
+
+
+/* =========================================================
+   Overlay - Upload Progress Step Complete
+   ========================================================= */
+
+.project-dashboard-overlay-upload-progress-step-complete {
+    color:
+        rgba(225, 255, 225, .90);
+}
+
+
+.project-dashboard-overlay-upload-progress-step-complete
+.project-dashboard-overlay-upload-progress-status {
+    border-color:
+        rgba(0, 255, 0, .45);
+
+    background:
+        rgba(0, 255, 0, .14);
+
+    color:
+        rgba(150, 255, 150, .95);
+}
+
+
+/* =========================================================
+   Overlay - Upload Progress Step Failed
+   ========================================================= */
+
+.project-dashboard-overlay-upload-progress-step-failed {
+    color:
+        rgba(255, 199, 206, .90);
+}
+
+
+.project-dashboard-overlay-upload-progress-step-failed
+.project-dashboard-overlay-upload-progress-status {
+    border-color:
+        rgba(255, 199, 206, .55);
+
+    background:
+        rgba(255, 199, 206, .10);
+
+    color:
+        rgba(255, 199, 206, .95);
+}
+
+
+/* =========================================================
+   Overlay - Processing
+   ========================================================= */
+
+.project-dashboard-overlay-processing {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 16px;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(0, 0, 0, .55);
+
+    z-index: 99999;
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   Overlay - Processing Spinner
+   ========================================================= */
+
+.project-dashboard-overlay-processing-spinner {
+    width: 40px;
+    height: 40px;
+
+    box-sizing: border-box;
+
+    border:
+        4px solid rgba(255, 255, 255, .14);
+
+    border-top-color:
+        rgba(255, 255, 255, .90);
+
+    border-radius:
+        50%;
+
+    animation:
+        project-dashboard-overlay-processing-spin
+        .8s linear infinite;
+}
+
+
+/* =========================================================
+   Overlay - Processing Progress
+   ========================================================= */
+
+.project-dashboard-overlay-processing-progress {
+    width: 280px;
+    height: 12px;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(255, 255, 255, .10);
+
+    border:
+        1px solid rgba(255, 255, 255, .14);
+
+    border-radius:
+        999px;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   Overlay - Processing Progress Bar
+   ========================================================= */
+
+.project-dashboard-overlay-processing-progress-bar {
+    width: 0%;
+    height: 100%;
+
+    background:
+        rgba(0, 255, 0, .15);
+
+    transition:
+        width .16s ease;
+}
+
+
+/* =========================================================
+   Overlay - Processing Text
+   ========================================================= */
+
+.project-dashboard-overlay-processing-text {
+    min-width: 280px;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    text-align: center;
+
+    color:
+        rgba(255, 255, 255, .92);
+}
+
+
+/* =========================================================
+   Overlay - Processing Spinner Animation
+   ========================================================= */
+
+@keyframes project-dashboard-overlay-processing-spin {
+
+    from {
+        transform:
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   Overlay - Restart Required
+
+   Application Version Gate. Highest-level, blocking but
+   recoverable - mirrors Overlay - Processing's fixed/inset/
+   z-index so it can never be trapped inside Settings, Upload,
+   or a Dashboard slot.
+   ========================================================= */
+
+.project-dashboard-overlay-restart-required {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(0, 0, 0, .55);
+
+    z-index: 99999;
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   Overlay - Restart Required Message
+   ========================================================= */
+
+.project-dashboard-overlay-restart-required-message {
+    min-width: 280px;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    text-align: center;
+
+    color:
+        rgba(255, 255, 255, .95);
+}
+
+
+/* =========================================================
+   Overlay - Restart Required Detail
+   ========================================================= */
+
+.project-dashboard-overlay-restart-required-detail {
+    min-width: 280px;
+    max-width: 420px;
+
+    font-size: 14px;
+    font-weight: 400;
+
+    text-align: center;
+
+    color:
+        rgba(255, 255, 255, .80);
+}
+
+
+/* =========================================================
+   Overlay - Restart Required Button
+   ========================================================= */
+
+.project-dashboard-overlay-restart-required-button {
+    margin-top: 8px;
+
+    padding: 10px 28px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color:
+        rgba(0, 0, 0, .90);
+
+    background:
+        rgba(255, 255, 255, .92);
+
+    border: none;
+    border-radius: 4px;
+
+    cursor: pointer;
+}
+
+.project-dashboard-overlay-restart-required-button:disabled {
+    cursor: default;
+
+    opacity: .6;
+}
+
+
+/* =========================================================
+   Overlay - Notification
+   ========================================================= */
+
+.project-dashboard-overlay-notification {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(0, 0, 0, .55);
+
+    z-index: 11000;
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   Overlay - Notification Panel
+   ========================================================= */
+
+.project-dashboard-overlay-notification-panel {
+    display: flex;
+    flex-direction: column;
+
+    width: fit-content;
+    height: 220px;
+
+    min-width: 420;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    background:
+        #161b22;
+
+    border:
+        1px solid rgba(255, 255, 255, .10);
+
+    border-radius:
+        8px;
+
+    box-shadow:
+        0 12px 32px rgba(0, 0, 0, .35);
+
+    overflow: hidden;
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   Overlay - Notification Header
+   ========================================================= */
+
+.project-dashboard-overlay-notification-header {
+    display: flex;
+    flex: 0 0 50px;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    min-width: 0;
+
+    padding: 0 16px;
+
+    box-sizing: border-box;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .06);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color:
+        rgba(255, 255, 255, .90);
+}
+
+
+/* =========================================================
+   Overlay - Notification Body
+   ========================================================= */
+
+.project-dashboard-overlay-notification-body {
+    display: flex;
+    flex: 1 1 0;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 0;
+    min-height: 0;
+
+    padding: 16px 20px;
+
+    box-sizing: border-box;
+
+    overflow: auto;
+
+    font-size: 13px;
+    line-height: 1.45;
+
+    text-align: center;
+
+    color:
+        rgba(235, 240, 246, .88);
+}
+
+
+/* =========================================================
+   Overlay - Notification Footer
+   ========================================================= */
+
+.project-dashboard-overlay-notification-footer {
+    display: flex;
+    flex: 0 0 50px;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 12px;
+
+    box-sizing: border-box;
+
+    border-top:
+        1px solid rgba(255, 255, 255, .06);
+}
+
+
+/* =========================================================
+   Overlay - Notification Button
+   Shared
+   ========================================================= */
+
+.project-dashboard-overlay-notification-button {
+    display: flex;
+    flex: 0 0 auto;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 90px;
+    height: 32px;
+
+    padding: 0 12px;
+
+    box-sizing: border-box;
+
+    border:
+        1px solid rgba(255, 255, 255, .12);
+
+    border-radius:
+        4px;
+
+    background:
+        #21262d;
+
+    color:
+        rgba(255, 255, 255, .90);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    transition:
+        background .12s ease,
+        border-color .12s ease,
+        color .12s ease;
+}
+
+
+.project-dashboard-overlay-notification-button:focus {
+    outline: none;
+}
+
+
+.project-dashboard-overlay-notification-button:active {
+    transform:
+        translateY(1px);
+}
+
+
+/* =========================================================
+   Overlay - Notification Button - OK
+   ========================================================= */
+
+.project-dashboard-overlay-notification-button-ok {
+    border-color:
+        rgba(0, 255, 0, .30);
+
+    background:
+        rgba(0, 255, 0, .10);
+
+    color:
+        rgba(255, 255, 255, .92);
+}
+
+
+.project-dashboard-overlay-notification-button-ok:hover {
+    border-color:
+        rgba(0, 255, 0, .45);
+
+    background:
+        rgba(0, 255, 0, .18);
+
+    color:
+        #ffffff;
+}
+
+
+/* =========================================================
+   Overlay - Notification Button - Close
+   ========================================================= */
+
+.project-dashboard-overlay-notification-button-close {
+    border-color:
+        rgba(255, 255, 255, .12);
+
+    background:
+        #21262d;
+
+    color:
+        rgba(205, 214, 224, .88);
+}
+
+
+.project-dashboard-overlay-notification-button-close:hover {
+    border-color:
+        rgba(255, 255, 255, .20);
+
+    background:
+        #30363d;
+
+    color:
+        rgba(255, 255, 255, .96);
+}
+
+
+/* =========================================================
+   Overlay - Notification Button - Yes
+   ========================================================= */
+
+.project-dashboard-overlay-notification-button-yes {
+    border-color:
+        rgba(0, 255, 0, .30);
+
+    background:
+        rgba(0, 255, 0, .10);
+
+    color:
+        rgba(255, 255, 255, .92);
+}
+
+
+.project-dashboard-overlay-notification-button-yes:hover {
+    border-color:
+        rgba(0, 255, 0, .45);
+
+    background:
+        rgba(0, 255, 0, .18);
+
+    color:
+        #ffffff;
+}
+
+
+/* =========================================================
+   Overlay - Notification Button - No
+   ========================================================= */
+
+.project-dashboard-overlay-notification-button-no {
+    border-color:
+        rgba(255, 255, 255, .12);
+
+    background:
+        #21262d;
+
+    color:
+        rgba(205, 214, 224, .88);
+}
+
+
+.project-dashboard-overlay-notification-button-no:hover {
+    border-color:
+        rgba(255, 255, 255, .20);
+
+    background:
+        #30363d;
+
+    color:
+        rgba(255, 255, 255, .96);
+}
+
+
+/* =========================================================
+   Overlay - Notification Button - Retry
+   ========================================================= */
+
+.project-dashboard-overlay-notification-button-retry {
+    border-color:
+        rgba(0, 255, 0, .30);
+
+    background:
+        rgba(0, 255, 0, .10);
+
+    color:
+        rgba(255, 255, 255, .92);
+}
+
+
+.project-dashboard-overlay-notification-button-retry:hover {
+    border-color:
+        rgba(0, 255, 0, .45);
+
+    background:
+        rgba(0, 255, 0, .18);
+
+    color:
+        #ffffff;
+}
+
+
+/* =========================================================
+   Overlay - Notification Button - Cancel
+   ========================================================= */
+
+.project-dashboard-overlay-notification-button-cancel {
+    border-color:
+        rgba(255, 199, 206, .35);
+
+    background:
+        rgba(255, 199, 206, .08);
+
+    color:
+        rgba(255, 199, 206, .95);
+}
+
+
+.project-dashboard-overlay-notification-button-cancel:hover {
+    border-color:
+        rgba(255, 199, 206, .55);
+
+    background:
+        rgba(255, 199, 206, .16);
+
+    color:
+        #FFC7CE;
+}
