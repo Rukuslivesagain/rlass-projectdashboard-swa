@@ -40,24 +40,39 @@
         zoom: 2.5;
       }
 
-      .request-access-message {
-        margin: 40px 0 0 0;
-        font-size: 14px;
-        line-height: 1.5;
-        text-align: center;
+      /* Status indicator - non-selected dashboard tab formatting.
+         Visual values copied exactly from src/css/tabs.css
+         (.project-dashboard-tabs-tab). Not interactive: no hover,
+         default cursor; width fits the label. */
+      .request-access-status {
+        display: flex;
+        height: 32px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+        box-sizing: border-box;
+        border: 1px solid rgba(0, 255, 0, .10);
+        border-bottom: 0;
+        border-radius: 6px 6px 0 0;
+        color: rgba(225, 255, 225, .85);
+        background: rgba(0, 255, 0, .05);
+        font: inherit;
+        white-space: nowrap;
       }
 
-      .request-access-message p {
-        margin: 0;
+      .request-access-branding-position {
+        margin: 24px 0 0 0;
+      }
+
+      .request-access-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 40px 0 0 0;
       }
 
       .request-access-email {
         width: 320px;
-        margin: 24px 0 0 0;
-      }
-
-      .request-access-action {
-        margin: 24px 0 0 0;
       }
 
       .request-access-sign-out {
@@ -211,22 +226,24 @@
   </head>
   <body>
     <!-- Standalone host page - served by staticwebapp.config.json (403 override). -->
-    <div class="request-access-branding">
-      <div class="application-header-left">
-        <div class="application-header-application-name"><span class="application-header-application-name-active">Active</span><span class="application-header-application-name-manager">Manager</span></div>
-        <span class="application-header-separator">|</span>
-        <span class="application-header-module-name">project dashboard</span>
+    <span class="request-access-status">User not found.</span>
+    <div class="request-access-branding-position">
+      <div class="request-access-branding">
+        <div class="application-header-left">
+          <div class="application-header-application-name"><span class="application-header-application-name-active">Active</span><span class="application-header-application-name-manager">Manager</span></div>
+          <span class="application-header-separator">|</span>
+          <span class="application-header-module-name">project dashboard</span>
+        </div>
       </div>
     </div>
-    <div class="request-access-message">
-      <p>User not found.</p>
-    </div>
-    <div class="request-access-email">
-      <input type="email" id="request-access-email" class="project-dashboard-settings-select" value="" aria-label="Signed-in email" disabled />
-    </div>
-    <!-- Visual only: no form, no handler, no request. Request workflow is a future pass. -->
-    <div class="request-access-action">
-      <button type="button" class="project-dashboard-tabs-tab project-dashboard-tabs-tab-selected">Request Access</button>
+    <div class="request-access-row">
+      <div class="request-access-email">
+        <input type="email" id="request-access-email" class="project-dashboard-settings-select" value="" aria-label="Signed-in email" disabled />
+      </div>
+      <!-- Visual only: no form, no handler, no request. Request workflow is a future pass. -->
+      <div class="request-access-action">
+        <button type="button" class="project-dashboard-tabs-tab project-dashboard-tabs-tab-selected">Request Access</button>
+      </div>
     </div>
     <div class="request-access-sign-out">
       <a href="/.auth/logout">Sign out</a>
