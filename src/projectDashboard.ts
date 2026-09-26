@@ -1,14 +1,4 @@
 // =====================================================
-// PCF / Generated
-// =====================================================
-
-import {
-    IInputs,
-    IOutputs
-} from "./generated/ManifestTypes";
-
-
-// =====================================================
 // Core Helpers
 // =====================================================
 
@@ -170,13 +160,7 @@ import "./css/overlays.css";
 import "./css/uploads.css";
 import "./css/tabs.css";
 
-export class ProjectDashboard
-    implements ComponentFramework.StandardControl<
-        IInputs,
-        IOutputs
-    > {
-
-    private context!: ComponentFramework.Context<IInputs>;
+export class ProjectDashboard {
 
     // =====================================================
     // Application Terminal State
@@ -187,8 +171,6 @@ export class ProjectDashboard
     // =====================================================
 
     private applicationTerminated = false;
-
-    private readonly MODE_VIEW_TYPE = "";
 
     private container:HTMLDivElement;
     private ctrContainer:HTMLDivElement;
@@ -262,24 +244,13 @@ export class ProjectDashboard
     private btnTaskSearchClear!: HTMLButtonElement;
 
     private pcfModeViewType = "";
-    private pcfModeViewInfoJson = "";
     private pcfModeViewIndex = 0;
-    private pcfModeViewContextJson = "";
-    private pcfModeViewLoadingIsComplete = true;
-    private pcfModeOutgoingPayloadJson = "";
     private pcfModeIncomingPayloadJson = "";
-    private pcfModeIncomingStatus = 0;
 
-    private previousPCFModeViewType = "";
-    private previousPCFModeViewInfoJson = "";
     private previousPCFModeViewIndex = 0;
-    private previousPCFModeViewContextJson = "";
     private previousPCFModeIncomingPayloadJson = "";
-    private previousPCFModeOutgoingPayloadJson = "";
-    private previousPCFModeIncomingStatus = 0;
     //private previousBoardConfig: TaskBoardConfig | null =null;
 
-    private tempPcfModeViewIndex = 0;
     private dashboardSlotUserConfig:
         {
             Slot: number;
@@ -292,7 +263,6 @@ export class ProjectDashboard
     private routeStatus = 0;
     private routeInProgress = false;
     private routeHasCompleted = false;
-    private updateViewRenderCount = 0;
 
     private actionMode = "";
 
@@ -326,10 +296,6 @@ export class ProjectDashboard
     private previousPayloadViewContext = "";
     private previousPayloadDecodedArtifactData: unknown = null;
 
-    private routeEchoSource = "";
-    private routeEchoUpdatedProperties:string[] =[];
-    private outputChangeType = 0;
-    
     private processingText:
     HTMLDivElement | null =
         null;
@@ -461,44 +427,61 @@ export class ProjectDashboard
     // =====================================================
     private activeState: ActiveState | null = null;
 
-    private notifyOutputChanged!: () => void;
+    // =====================================================
+    // Authenticated User
+    //
+    // Standalone Migration - Pass 7B. Application-owned
+    // authenticated user email, supplied once by the standalone
+    // host through initialize() (SWA /.auth/me ->
+    // clientPrincipal.userDetails). Normalized here, at the
+    // single point of entry. Replaces the PayloadToPCFUserEmail
+    // value Power Apps previously supplied. Startup user access
+    // and every internally dispatched payload read it from here.
+    // =====================================================
 
-    public init(
-        context:
-            ComponentFramework.Context<IInputs>,
+    private authenticatedUserEmail = "";
 
-        notifyOutputChanged:
-            () => void,
+    // =========================================================
+    // Initialize
+    //
+    // Standalone Migration - Pass 7B. Standalone application
+    // initialization: take the authenticated user, take ownership
+    // of the application container, build the application UI.
+    // Container sizing is owned by the browser host (host.css).
+    // =========================================================
 
-        state:
-            ComponentFramework.Dictionary,
-
+    public initialize(
         container:
-            HTMLDivElement
+            HTMLDivElement,
+
+        authenticatedUserEmail:
+            string
     ): void {
 
-        this.notifyOutputChanged =
-        notifyOutputChanged;
-
-        // =========================================================
-        // Configure PCF Host Container
-        // =========================================================
-        container.style.width = "100%";
-        container.style.height = "100%";
-        container.style.display = "flex";
-        container.style.flexDirection = "column";
-
-        // =========================================================
-        // Track Host Container Resize
-        // =========================================================
-
-        context.mode.trackContainerResize(
-            true
-        );
+        this.authenticatedUserEmail =
+            authenticatedUserEmail
+                .trim()
+                .toLowerCase();
 
         this.container = container;
 
         this.buildUI();
+
+    }
+
+    // =========================================================
+    // Start
+    //
+    // Standalone Migration - Pass 7B. Begins the application
+    // lifecycle. Replaces the Power Apps 911 handshake (which
+    // asked Power Apps to send the Startup payload): the
+    // application dispatches its own Startup payload through
+    // the same path the Menu and Restart already use.
+    // =========================================================
+
+    public start(): void {
+
+        this.processDispatchStartupPayload();
 
     }
 
@@ -1962,61 +1945,38 @@ export class ProjectDashboard
     }
 
     // =========================================================
-    // Notify Output Changed - Terminal Boundary
+    // Dispatch Incoming Payload
     //
-    // Every existing direct notifyOutputChanged() call site is
-    // routed through this boundary. A terminated instance must
-    // not publish output to Power Apps.
-    // =========================================================
-
-    private processNotifyOutputChanged(): void {
-
-        if (
-            this.applicationTerminated
-        ) {
-
-            return;
-
-        }
-
-        this.notifyOutputChanged();
-
-    }
-
-    // =========================================================
-    // Dispatch PCF Mode Event - Terminal Boundary
+    // Standalone Migration - Pass 7B. Application-owned command
+    // dispatch for the existing incoming payload schema. Replaces
+    // the Power Apps loopback (output type 7 ->
+    // notifyOutputChanged -> Power Apps echo ->
+    // PCFModeIncomingPayloadJson -> updateView).
     //
-    // Every existing direct this.context.events.PCFModeEvent...
-    // dispatch site is routed through this boundary. A
-    // terminated instance must not publish events to Power
-    // Apps. Preserves the existing event-availability check.
+    // Stores the serialized payload in pcfModeIncomingPayloadJson
+    // synchronously (as every former loopback caller did), then
+    // runs the application router in a microtask - i.e. after the
+    // current click/callback returns - preserving the former
+    // asynchronous loopback re-entry ordering.
     // =========================================================
 
-    private processDispatchPCFModeEvent(
-        eventName:
-            "PCFModeEventCrud" |
-            "PCFModeEventSendStatus200" |
-            "PCFModeEventSendStatus300" |
-            "PCFModeEventSendStatus400" |
-            "PCFModeEventSendStatus911"
+    private processDispatchIncomingPayload(
+        payload:
+            object
     ): void {
 
-        if (
-            this.applicationTerminated
-        ) {
+        this.pcfModeIncomingPayloadJson =
+            JSON.stringify(
+                payload
+            );
 
-            return;
+        queueMicrotask(
+            () => {
 
-        }
+                void this.processApplicationRoute();
 
-        if (
-            typeof this.context.events[eventName] ===
-                "function"
-        ) {
-
-            this.context.events[eventName]();
-
-        }
+            }
+        );
 
     }
 
@@ -2089,31 +2049,29 @@ export class ProjectDashboard
                 "",
 
             PayloadToPCFUserEmail:
-                JSON.parse(
-                    this.context.parameters.PCFModeIncomingPayloadJson.raw || "{}"
-                ).PayloadToPCFUserEmail ?? ""
+                this.authenticatedUserEmail
         };
 
-        this.pcfModeIncomingPayloadJson =
-            JSON.stringify(
-                payload
-            );
-
-        this.outputChangeType =
-            7;
-
-        this.processNotifyOutputChanged();
+        this.processDispatchIncomingPayload(
+            payload
+        );
 
     }
 
     // =========================================================
-    // Update View
+    // Process Application Route
+    //
+    // Standalone Migration - Pass 7B. The Project Dashboard
+    // application router, entered only through
+    // processDispatchIncomingPayload(). The PCF change detector
+    // (updatedProperties / host old-new comparisons, the 911
+    // first-render handshake, echo route 888888, Routes 1/2/3/5/6)
+    // is removed - every entry is an explicit internal command.
+    // Startup work lives in processStartup(). Route numbers and
+    // the route switch are unchanged.
     // =========================================================
 
-    public async updateView(
-        context:
-            ComponentFramework.Context<IInputs>
-    ): Promise<void> {
+    private async processApplicationRoute(): Promise<void> {
 
         // =====================================================
         // Application Terminal Gate
@@ -2144,108 +2102,20 @@ export class ProjectDashboard
             this.pcfModeViewType === null ||
             this.pcfModeViewType === ""
                 ? "Empty"
-                : this.pcfModeViewType,
-            "| Updated Properties:",
-            context.updatedProperties
+                : this.pcfModeViewType
         );
-
-        this.context =
-            context;
 
         if (
-            this.updateViewRenderCount ===
-                0 &&
-            !this.previousPCFModeViewType &&
-            (
-                context.updatedProperties.length ===
-                    0 ||
-                (
-                    context.parameters.PCFModeIncomingPayloadJson.raw ??
-                    ""
-                ).length ===
-                    0
-            )
-        ) {
-
-            this.updateViewRenderCount++;
-
-            this.processEvent(
-                911,
-                {}
-            );
-
-            return;
-
-        }
-        else {
-
-            //this.updateViewRenderCount++;
-
-        }
-
-        const PCFContextHasChanged =
-            context.updatedProperties.some(
-                property =>
-                    property.startsWith(
-                        "PCFMode"
-                    )
-            )||
-            (!context.parameters.PCFModeViewType.raw && this.updateViewRenderCount ===
-        0)
-
-        const PCFNonContextHasChanged =
-        context.updatedProperties.some(
-            property =>
-                property === "layout"
-                ||
-                property === "theme"
-        );
-
-        console.log(
-            "Updated Properties Exact:",
-            JSON.stringify(
-                context.updatedProperties
-            )
-        );
-
-        // Is there an active workflow being executed? Is this an echo or an error?
-        if (
-
-            this.pcfModeViewType === "Error" ||
-            (
-                !PCFContextHasChanged
-                &&
-                (
-                    this.route === 888888 ||
-                    this.routeInProgress
-                    ||
-                    PCFNonContextHasChanged
-                )
-            )
-        ) {
-
-            // Capture re-entry context and route to Echo Router.
-
-            this.routeEchoSource =
-                this.pcfModeViewType;
-
-            this.routeEchoUpdatedProperties =
-                [...context.updatedProperties];
-
-            this.route =
-                888888;
-
-        }
-        else if (
             !this.pcfModeViewType
         ) {
 
             // =====================================================
-            // Empty - Initial PCF Entry
+            // Empty - Initial Entry
             // =====================================================
             // Scenario:
-            // PCF has initialized but no internal View Type has
-            // been established yet.
+            // No internal View Type has been established yet
+            // (start(), or Startup re-entry through
+            // processDispatchStartupPayload).
             //
             // Expected:
             // Inspect the incoming payload to determine the
@@ -2254,7 +2124,7 @@ export class ProjectDashboard
             if (
                 String(
                     JSON.parse(
-                        context.parameters.PCFModeIncomingPayloadJson.raw || "{}"
+                        this.pcfModeIncomingPayloadJson || "{}"
                     ).PayloadToPCFType ?? ""
                 ).startsWith(
                     "Startup"
@@ -2275,1282 +2145,258 @@ export class ProjectDashboard
 
         }
 
-        // ============================================
-        // Startup bypass checks
-        // ============================================
+        //Reset route id
+        this.route = 0;
+
+        // ========================================
+        // Startup
+        // ========================================
 
         if (
-            PCFContextHasChanged
-            ||
-            (
-                this.route !== 996 && // Mode change
-                this.route !== 997 && // Retry
-                this.route !== 998 && // Reset
-                this.route !== 999 && // Safe exit
-                this.route !== 888888 && // Echo
-                this.route !== 999999 // Sleep
-            )
+            this.pcfModeViewType ===
+                "Startup" ||
+            !this.pcfModeViewType
         ) {
-            
-            //Reset route id
-            this.route = 0;
 
-            //No bypass
-            //this.pcfModeViewInfoJson =
-                //context.parameters.PCFModeViewInfoJson.raw ??
-                //"";
-
-            //this.pcfModeViewIndex =
-                //context.parameters.PCFModeViewIndex.raw ??
-                //0;
-
-            //this.pcfModeIncomingStatus =
-                //context.parameters.PCFModeIncomingStatus.raw ??
-                //0;
-
-            //this.pcfModeIncomingPayloadJson =
-                //context.parameters.PCFModeIncomingPayloadJson.raw ??
-                //"";
-
-            // ========================================
-            // Startup
-            // ========================================
+            const startupCompleted =
+                await this.processStartup();
 
             if (
-                this.pcfModeViewType ===
-                    "Startup" ||
-                !this.pcfModeViewType
-            ) {
-
-                console.log(
-                    "Start - Route: ",
-                    this.pcfModeViewType
-                );
-
-                this.processProcessingOverlay(
-                    true,
-                    "Checking version...",
-                    "Spinner"
-                );
-
-                // ========================================
-                // Startup Azure Network Deadline State
-                //
-                // Bounds only the startup Azure network phase
-                // (Application Registry / User Access / User
-                // Profile reads). Declared here so the outer
-                // catch/finally below can classify and clear
-                // it regardless of which startup step fails.
-                // ========================================
-
-                const startupAzureTimeoutMs =
-                    15000;
-
-                const startupRequestController =
-                    new AbortController();
-
-                let startupRequestTimedOut =
-                    false;
-
-                let startupRequestTimeout:
-                    number | undefined =
-                        undefined;
-
-                try {
-
-                    this.routeInProgress = true
-
-                    // ========================================
-                    // Open Artifact Store
-                    // ========================================
-
-                    await this.artifactStore.open();
-
-                    // ========================================
-                    // Start Startup Azure Network Deadline
-                    //
-                    // Startup Architecture - Pass 1 (User Access
-                    // First). Moved ahead of User Access, since
-                    // User Access is itself the first Azure request
-                    // of this Startup pass and needs this transport
-                    // infrastructure (AbortController/timeout)
-                    // already in place - this is infrastructure
-                    // initialization, not an application-state
-                    // decision, so it does not violate the
-                    // User-Access-first invariant. Still covers
-                    // every startup Azure read that follows,
-                    // whichever one runs last.
-                    // ========================================
-
-                    startupRequestTimeout =
-                        window.setTimeout(
-                            () => {
-
-                                startupRequestTimedOut =
-                                    true;
-
-                                startupRequestController.abort();
-
-                            },
-                            startupAzureTimeoutMs
-                        );
-
-
-                    // ========================================
-                    // Get Current User Global Access
-                    //
-                    // Startup Architecture - Pass 1 (User Access
-                    // First). USER ACCESS IS THE FIRST APPLICATION
-                    // AUTHORITY ON EVERY STARTUP - moved ahead of
-                    // Application Registry retrieval and
-                    // processCheckApplicationVersion. No
-                    // application-state decision (local storage
-                    // interpretation, Application Registry,
-                    // version evaluation) occurs before this
-                    // succeeds.
-                    // ========================================
-
-                    this.processProcessingOverlay(
-                        null,
-                        "Checking user access...",
-                        "Spinner"
-                    );
-
-                    this.payloadUserEmail =
-                        JSON.parse(
-                            context.parameters.PCFModeIncomingPayloadJson.raw || "{}"
-                        ).PayloadToPCFUserEmail ?? "";
-
-                    // ========================================
-                    // Restart Re-Entry Context
-                    //
-                    // Startup Architecture - Pass 3.4 (Reset-Required
-                    // Restart Model) / Pass 3.5 (True Restart
-                    // Re-Entry Bypass). Temporary routing context
-                    // only - never persisted as application state,
-                    // never written to the artifact store. Read
-                    // directly from the incoming payload (the same
-                    // JSON.parse pattern already used above for
-                    // PayloadToPCFUserEmail) rather than the hydrated
-                    // this.payloadMode field, since Startup routing
-                    // (pcfModeViewType === "Startup", decided purely by
-                    // PayloadToPCFType) runs before processIncomingPayload
-                    // ever hydrates this.payloadMode - that hydration
-                    // only occurs on the separate Status-200/400
-                    // re-entry path. PayloadToPCFMode is otherwise
-                    // always "" on every existing Startup/Data-group
-                    // dispatch in this codebase, so "Restart" is an
-                    // unambiguous, non-colliding value - see
-                    // processDispatchStartupPayload /
-                    // processRestartApplication. User Validation/User
-                    // Session below are NEVER bypassed by this - only
-                    // the entire Section 3 Version Gate is skipped
-                    // (see below), not re-run-then-suppressed.
-                    // ========================================
-
-                    const startupIsRestartReEntry =
-                        JSON.parse(
-                            context.parameters.PCFModeIncomingPayloadJson.raw || "{}"
-                        ).PayloadToPCFMode ===
-                            "Restart";
-
-                    this.currentUser =
-                        await getUserAccessFromAzure(
-                            this.payloadUserEmail as string,
-                            startupRequestController.signal
-                        );
-
-                    // ========================================
-                    // Check Current User Is Active
-                    //
-                    // Startup Architecture - Pass 1B (Authorization
-                    // Failure Invalidates Local State). No trusted
-                    // authorization means no trusted resident state -
-                    // clear every resident artifact-store key and
-                    // reset in-memory user-authority fields before
-                    // communicating the failure. This check sits
-                    // inside the outer try, so a clear failure here
-                    // propagates to the existing outer catch and its
-                    // established centralized error communication -
-                    // no new error-handling decision is required for
-                    // this specific exit.
-                    // ========================================
-
-                    if (
-                        !this.currentUser
-                    ) {
-
-                        this.currentUserProfile =
-                            null;
-
-                        await this.processInvalidateLocalApplicationCache();
-
-                        this.showMessage(
-                            true,
-                            "Project Dashboard - User not found. Contact your administrator for access.",
-                            undefined,
-                            true,
-                            "app-fatal"
-                        );
-
-                        return;
-
-                    }
-
-                    // ========================================
-                    // Check Current User Global Access
-                    //
-                    // Startup Architecture - Pass 1B. Same
-                    // authorization-failure invalidation as above -
-                    // this.currentUser itself was truthy (User Access
-                    // returned data) but carries no usable access, so
-                    // it is reset to null alongside the resident
-                    // store clear rather than left resident with a
-                    // decoded-but-unauthorized value.
-                    // ========================================
-
-                    if (
-                        !this.currentUser.globalAccessKeys.some(
-                            key =>
-                                key.trim().length >
-                                    0
-                        )
-                    ) {
-
-                        this.currentUser =
-                            null;
-
-                        this.currentUserProfile =
-                            null;
-
-                        await this.processInvalidateLocalApplicationCache();
-
-                        this.showMessage(
-                            true,
-                            "Project Dashboard - Access Denied. Contact your administrator for access.",
-                            undefined,
-                            true,
-                            "app-fatal"
-                        );
-
-                        return;
-
-                    }
-
-                    // ========================================
-                    // User exists - User has Key - Start User Session
-                    // ========================================
-
-                    this.processProcessingOverlay(
-                        null,
-                        "Starting user session...",
-                        "Spinner"
-                    );
-
-                    // ========================================
-                    // Persist Current User & User Registry
-                    // ========================================
-
-                    await this.artifactStore.put(
-                        "user:current",
-                        new TextEncoder().encode(
-                            JSON.stringify(
-                                this.currentUser
-                            )
-                        ).buffer
-                    );
-
-                    const userProfilePackage =
-                        await getArtifactsFromAzure(
-                            "Other",
-                            [
-                                this.currentUser.userProfilePath
-                            ],
-                            startupRequestController.signal
-                        );
-
-                    const userProfileArtifacts =
-                        splitAzureArtifactPackage(
-                            userProfilePackage
-                        );
-
-                    const userProfileArtifact =
-                        userProfileArtifacts.get(
-                            `other:${this.currentUser.userProfilePath}`
-                        );
-
-                    if (
-                        !userProfileArtifact
-                    ) {
-
-                        throw new Error(
-                            `[ProjectDashboard] User profile registry was not returned: ${this.currentUser.userProfilePath}`
-                        );
-
-                    }
-
-                    await this.artifactStore.put(
-                        "user:current_profile",
-                        userProfileArtifact
-                    );
-
-                    this.currentUserProfile =
-                        JSON.parse(
-                            new TextDecoder().decode(
-                                new Uint8Array(
-                                    userProfileArtifact
-                                )
-                            )
-                        ) as UserProfileRegistry;
-
-
-                    // ========================================
-                    // Application Version Gate
-                    //
-                    // Startup Architecture - Pass 1 (User Access
-                    // First). Everything from here down is
-                    // application-state processing, now
-                    // structurally unreachable unless User Access
-                    // above already succeeded.
-                    //
-                    // Startup Architecture - Pass 3.5 (True Restart
-                    // Re-Entry Bypass). A Restart re-entry
-                    // (startupIsRestartReEntry) skips this entire
-                    // Section 3 gate - no Application Registry fetch
-                    // for this purpose, no processCheckApplicationVersion
-                    // call, no ApplicationVersionStatus is calculated
-                    // at all. Restart mode is trusted, one-shot
-                    // routing context generated internally only by
-                    // processRestartApplication, itself only
-                    // reachable after a prior Startup pass already
-                    // completed Version Check and the user already
-                    // executed the resulting action - re-evaluating
-                    // the version on this same re-entry would re-run
-                    // a decision that has already been made. This
-                    // intentionally also skips this pass's
-                    // appStatus === "Shutdown" check (it lives inside
-                    // processCheckApplicationVersion, not as a
-                    // separate duplicate check) - the next NORMAL
-                    // Startup will evaluate it again.
-                    // ========================================
-
-                    if (
-                        !startupIsRestartReEntry
-                    ) {
-
-                        // ========================================
-                        // 2 - Get Application Registry
-                        //
-                        // Runs unconditionally - Shutdown must be
-                        // detected even for a genuinely new
-                        // installation with no prior local cache.
-                        // ========================================
-
-                        let applicationRegistryArtifact:
-                            ArrayBuffer | undefined;
-
-                        try {
-
-                            applicationRegistryArtifact =
-                                await this.processFetchAuthoritativeApplicationRegistryArtifact(
-                                    startupRequestController.signal
-                                );
-
-
-                            // ========================================
-                            // 2.1 - Validate Application Registry
-                            // ========================================
-
-                            if (
-                                !applicationRegistryArtifact
-                            ) {
-
-                                this.showMessage(
-                                    true,
-                                    "Project Dashboard - Application configuration is unavailable. Refresh your browser to try again.",
-                                    "Application Registry was not returned.",
-                                    true,
-                                    "app-fatal"
-                                );
-
-                                return;
-
-                            }
-
-                        }
-                        catch (
-                            error
-                        ) {
-
-                            const errorMessage =
-                                error instanceof Error
-                                    ? error.message
-                                    : String(
-                                        error
-                                    );
-
-                            // ========================================
-                            // Startup Azure Network Deadline Exceeded
-                            //
-                            // Checked first - an aborted Application
-                            // Registry read must not fall through to
-                            // the ordinary retrieval-failure message.
-                            // ========================================
-
-                            if (
-                                startupRequestTimedOut
-                            ) {
-
-                                this.showMessage(
-                                    true,
-                                    "Project Dashboard - Application startup timed out. Refresh your browser to try again.",
-                                    `Startup Azure deadline exceeded after ${startupAzureTimeoutMs} ms: ${errorMessage}`,
-                                    true,
-                                    "app-fatal"
-                                );
-
-                                return;
-
-                            }
-
-                            this.showMessage(
-                                true,
-                                "Project Dashboard - Application configuration is unavailable. Refresh your browser to try again.",
-                                `Application Registry retrieval failed: ${errorMessage}`,
-                                true,
-                                "app-fatal"
-                            );
-
-                            return;
-
-                        }
-
-
-                        // ========================================
-                        // End Startup Azure Network Deadline
-                        //
-                        // Startup Architecture - Pass 1 (User Access
-                        // First). The final startup Azure read
-                        // (Application Registry, now that User
-                        // Access/Profile run first) has completed.
-                        // Clear the deadline immediately, before any
-                        // subsequent local IndexedDB work, so that
-                        // work is never charged against the network
-                        // deadline.
-                        // ========================================
-
-                        window.clearTimeout(
-                            startupRequestTimeout
-                        );
-
-
-                        // ========================================
-                        // 2.2 - Decode Application Registry
-                        // ========================================
-
-                        const applicationRegistry =
-                            JSON.parse(
-                                new TextDecoder().decode(
-                                    new Uint8Array(
-                                        applicationRegistryArtifact
-                                    )
-                                )
-                            ) as ApplicationRegistry;
-
-
-                        // ========================================
-                        // 3 - Evaluate Application Version
-                        //
-                        // Single application-version decision model -
-                        // Startup no longer maintains its own separate
-                        // requiredVersion comparison beside this.
-                        // ========================================
-
-                        const applicationVersionStatus =
-                            await this.processCheckApplicationVersion(
-                                applicationRegistry
-                            );
-
-
-                        // ========================================
-                        // 3.0 - Update Available Header Visibility
-                        //
-                        // Startup Architecture - Pass 3.3 (Update
-                        // Available Header Action). Set intentionally
-                        // on every successful evaluation - Update
-                        // Available is the only status that shows
-                        // this button, so a prior Startup's Update
-                        // Available state can never remain visible
-                        // after a later Startup resolves Pass or No
-                        // Local Version. Non-blocking - execution
-                        // always continues below regardless of this
-                        // toggle.
-                        // ========================================
-
-                        this.btnApplicationUpdateAvailable.classList.toggle(
-                            "application-hidden",
-                            applicationVersionStatus !==
-                                "Update Available"
-                        );
-
-
-                        // ========================================
-                        // 3.1 - Shutdown Stops Startup
-                        //
-                        // The gate already invoked showMessage/app-fatal.
-                        //
-                        // Startup Architecture - Pass 3.6 (Version
-                        // Acceptance + Registry Snapshot). Shutdown is
-                        // terminal - no Restart transaction can ever
-                        // complete from this state (app-fatal routes
-                        // every further updateView call to the Echo
-                        // router, never back through Startup), so the
-                        // retained this.applicationRegistry snapshot
-                        // (already set above by
-                        // processCheckApplicationVersion's own Step 1)
-                        // has no future consumer. Released here for
-                        // the same reason resident state is released
-                        // on other terminal failures elsewhere in
-                        // Startup, not because Shutdown itself needed
-                        // a new mechanism.
-                        // ========================================
-
-                        if (
-                            applicationVersionStatus ===
-                                "Shutdown"
-                        ) {
-
-                            this.applicationRegistry =
-                                null;
-
-                            return;
-
-                        }
-
-
-                        // ========================================
-                        // 3.2 - Restart Required Preparation + Stop
-                        // Startup
-                        //
-                        // Startup Architecture - Pass 3.7 (Restart
-                        // Required Preparation + True Application
-                        // Restart). The local version transaction must
-                        // be fully prepared BEFORE the user is ever
-                        // presented with the Restart Required UI -
-                        // resolve the SAME ApplicationVersionInfo that
-                        // produced this decision, optionally clear
-                        // IndexedDB, then accept the triggering
-                        // version, all before mounting the billboard.
-                        // The Restart button itself no longer performs
-                        // any of this - see processRestartApplication.
-                        // A later Restart re-entry does not repeat any
-                        // of this either - see the common acceptance
-                        // boundary below, which now explicitly excludes
-                        // Restart re-entry.
-                        //
-                        // Locked order: optional clear -> write version
-                        // -> mount UI -> return. Never write-then-clear
-                        // (would delete the version just written).
-                        // Never show-then-prepare (the user must not be
-                        // able to click Restart before preparation has
-                        // succeeded).
-                        //
-                        // Neither call below is wrapped in a local
-                        // try/catch - a failure in either propagates
-                        // unchanged to the existing outer Startup catch,
-                        // exactly like every other unguarded await in
-                        // this try block. That is sufficient on its own
-                        // to satisfy "the UI must not be shown as though
-                        // preparation succeeded" - a thrown error skips
-                        // every following line, including
-                        // processMountApplicationRestartRequired below,
-                        // with no new error-handling mechanism required.
-                        // ========================================
-
-                        if (
-                            applicationVersionStatus ===
-                                "Restart Required"
-                        ) {
-
-                            const versionInfo =
-                                this.processResolveApplicationVersionInfo(
-                                    applicationRegistry
-                                );
-
-                            if (
-                                versionInfo.resetRequired
-                            ) {
-
-                                await this.processInvalidateLocalApplicationCache();
-
-                            }
-
-                            await this.processAcceptApplicationVersion(
-                                versionInfo.current
-                            );
-
-                            this.applicationRegistry =
-                                null;
-
-                            this.processProcessingOverlay(
-                                false
-                            );
-
-                            this.processMountApplicationRestartRequired();
-
-                            return;
-
-                        }
-
-                    }
-                    else {
-
-                        // ========================================
-                        // 3.0 - Update Available Header Visibility -
-                        // Restart Re-Entry
-                        //
-                        // Startup Architecture - Pass 3.5 (True
-                        // Restart Re-Entry Bypass). Section 3 above
-                        // was skipped entirely, so its normal
-                        // per-evaluation toggle never ran - force the
-                        // button hidden here instead, so a Restart
-                        // re-entry can never retain a stale visible
-                        // Update Available button.
-                        // ========================================
-
-                        this.btnApplicationUpdateAvailable.classList.add(
-                            "application-hidden"
-                        );
-
-                    }
-
-                    // ========================================
-                    // Startup Architecture - Pass 3.2 (Version
-                    // Status Semantics).
-                    //
-                    // Obsolete acceptance workaround removed. It
-                    // existed only for the retired Pass-3.1-era path
-                    // where an empty local cache could itself
-                    // produce "Active" - that path no longer exists
-                    // (an absent system:localVersion now reports
-                    // "No Local Version" directly). Section 3 itself
-                    // performs zero version-acceptance writes for any
-                    // status - see the common acceptance boundary
-                    // immediately below.
-                    // ========================================
-
-                    // ========================================
-                    // Common Version Acceptance Boundary
-                    //
-                    // Startup Architecture - Pass 3.6 (Version
-                    // Acceptance + Registry Snapshot) / Pass 3.7
-                    // (Restart Required Preparation + True Application
-                    // Restart). Reached only by normal Startup's
-                    // non-blocking outcomes - Pass, No Local Version,
-                    // Update Available. Never reached by Shutdown or
-                    // Restart Required (both now fully prepare-and-
-                    // return earlier, above - Restart Required's own
-                    // acceptance happens in its own branch, before its
-                    // billboard is even shown). Explicitly EXCLUDED on
-                    // Restart re-entry (startupIsRestartReEntry) - a
-                    // Restart re-entry must never depend on
-                    // this.applicationRegistry or attempt a second
-                    // acceptance, since its version was already written
-                    // during the ORIGINAL Restart Required/Update
-                    // Available pass, before the user ever left that
-                    // screen. this.applicationRegistry (the Application
-                    // Version Gate's existing resident snapshot field -
-                    // already set by processCheckApplicationVersion's
-                    // own Step 1) still holds the exact registry that
-                    // produced this pass's decision. Its resolved
-                    // versionInfo.current is accepted through the
-                    // existing processAcceptApplicationVersion before
-                    // the snapshot is released - if the accept throws,
-                    // it propagates to the existing outer Startup catch
-                    // unchanged, and the snapshot is intentionally left
-                    // intact rather than cleared ahead of a write that
-                    // never succeeded.
-                    // ========================================
-
-                    if (
-                        !startupIsRestartReEntry &&
-                        this.applicationRegistry
-                    ) {
-
-                        const versionInfo =
-                            this.processResolveApplicationVersionInfo(
-                                this.applicationRegistry
-                            );
-
-                        await this.processAcceptApplicationVersion(
-                            versionInfo.current
-                        );
-
-                        this.applicationRegistry =
-                            null;
-
-                    }
-
-                    // ========================================
-                    // Startup - Move PCF Into Runtime View State
-                    //
-                    // Section 4 - Normal Runtime. Reached
-                    // unconditionally whether Section 3 ran normally
-                    // or was bypassed for Restart re-entry.
-                    // ========================================
-
-                    this.pcfModeViewType =
-                        "View";
-
-                    this.previousPCFModeViewType =
-                        this.pcfModeViewType;
-
-                    // =====================================================
-                    // Startup - Set Tabs
-                    // =====================================================
-
-                    this.processBuildUserTabs("Build",0,false);
-
-
-                }
-                catch (
-                    error
-                ) {
-
-                    const errorMessage =
-                        error instanceof Error
-                            ? error.message
-                            : String(
-                                error
-                            );
-
-                    // ========================================
-                    // Startup Architecture - Pass 1B (Clear
-                    // IndexedDB On Any Auth Failure).
-                    //
-                    // This catch is the User Auth gate's failure
-                    // boundary (User Access and the User Profile
-                    // fetch that depends on it both run before
-                    // Application Registry/version processing - see
-                    // Pass 1). ANY failure reaching this catch means
-                    // the Auth gate did not complete successfully,
-                    // so local state is no longer trusted -
-                    // regardless of status/error type. The error
-                    // TYPE only ever selects the MESSAGE
-                    // (below, inside processApplicationError's
-                    // classification); it never controls whether
-                    // this clear runs. In-memory user-authority
-                    // fields are reset alongside it so no stale
-                    // authorized-user state survives either.
-                    // ========================================
-
-                    this.currentUser =
-                        null;
-
-                    this.currentUserProfile =
-                        null;
-
-                    await this.processInvalidateLocalApplicationCache();
-
-                    // ========================================
-                    // Startup Azure Network Deadline Exceeded
-                    //
-                    // Checked first - a timed-out User Access or
-                    // User Profile read must not fall through to
-                    // the existing classified failure messages.
-                    // ========================================
-
-                    if (
-                        startupRequestTimedOut
-                    ) {
-
-                        this.showMessage(
-                            true,
-                            "Project Dashboard - Application startup timed out. Refresh your browser to try again.",
-                            `Startup Azure deadline exceeded after ${startupAzureTimeoutMs} ms: ${errorMessage}`,
-                            true,
-                            "app-fatal"
-                        );
-
-                        return;
-
-                    }
-
-                    // ========================================
-                    // Single Application Error Handler - Pass 3.
-                    //
-                    // Startup no longer classifies this failure
-                    // itself - it only identifies the operation
-                    // that failed (GetUserAccessFromAzure, the
-                    // same identifier helpers/errors.ts's User
-                    // Access classification family is already
-                    // gated on) and supplies the communication
-                    // adapter. The original error (an
-                    // AzureArtifactError, with its real .status,
-                    // for an Azure failure; a plain Error for the
-                    // still-unmigrated "Artifact store is not
-                    // open" case) is passed intact - no
-                    // pre-normalization, no disposition override.
-                    // processApplicationError normalizes,
-                    // classifies, resolves disposition (Message,
-                    // for every currently-known case here), and
-                    // performs the resulting showMessage/app-fatal
-                    // call itself. Startup only owns stopping this
-                    // workflow afterward.
-                    // ========================================
-
-                    processApplicationError(
-                        error,
-                        {
-                            source:
-                                "Startup",
-
-                            operation:
-                                "GetUserAccessFromAzure"
-                        },
-                        this.processGetApplicationErrorCommunication()
-                    );
-
-                    return;
-
-                }
-                finally {
-
-                    // ========================================
-                    // Defensive Startup Azure Network Deadline
-                    // Cleanup
-                    //
-                    // Already cleared on the success path above.
-                    // Clearing an already-cleared or already-fired
-                    // timer is harmless - this covers every other
-                    // exit (ordinary failure, timeout, early
-                    // return) from the startup Azure network phase.
-                    // ========================================
-
-                    window.clearTimeout(
-                        startupRequestTimeout
-                    );
-
-                    this.processProcessingOverlay(
-                        false
-                    );
-
-                    this.routeInProgress =
-                        false;
-
-                }
-
-            }
-
-            // ========================================
-            // Fatal Error - Exit Update View
-            // ========================================
-
-            if (
-                this.pcfModeViewType ===
-                    "Error"
+                !startupCompleted
             ) {
 
                 return;
 
             }
 
-            // ========================================
-            // Change Detection
-            // ========================================
+        }
 
-            // Route 1 - Empty
-            if (
-                this.pcfModeViewIndex === -1
-            ) {
+        // ========================================
+        // Fatal Error - Exit Route
+        // ========================================
 
-                this.route =
-                    1;
+        if (
+            this.pcfModeViewType ===
+                "Error"
+        ) {
 
-            }
+            return;
 
-            // Route 2 - View Change
-            else if (
-                context.updatedProperties.includes(
-                    "PCFModeViewIndex"
-                )
-            ) {
+        }
 
-                this.pcfModeViewIndex =
-                context.parameters.PCFModeViewIndex.raw ??
-                0;
+        // ========================================
+        // Incoming Payload
+        //
+        // Former Route 4 change detection. The dispatcher has
+        // already stored the command in pcfModeIncomingPayloadJson.
+        // ========================================
 
-                if (
-                    this.pcfModeViewIndex !==
-                        this.previousPCFModeViewIndex
-                ) {
+        if (
+            this.pcfModeIncomingPayloadJson !==
+                this.previousPCFModeIncomingPayloadJson
+        ) {
 
-                    this.route =
-                        2;
+            const incomingPayload =
+                JSON.parse(
+                    this.pcfModeIncomingPayloadJson
+                );
 
-                }
-                else {
+            incomingPayload.PayloadToPCFType =
+                String(
+                    incomingPayload.PayloadToPCFType ?? ""
+                ).split("|")[0];
 
-                    // Property tickled but value did not meaningfully change
-                    this.route =
-                        999;
-
-                }
-
-            }
-
-            // Route 3 - View Info Change
-            else if (
-                context.updatedProperties.includes(
-                    "PCFModeViewInfoJson"
-                )
-            ) {
-                
-                this.pcfModeViewInfoJson =
-                context.parameters.PCFModeViewInfoJson.raw ??
-                "";
-
-                if (
-                    this.pcfModeViewInfoJson !==
-                        this.previousPCFModeViewInfoJson
-                ) {
-
-                    this.route =
-                        3;
-
-                }
-                else {
-
-                    // Property tickled but value did not meaningfully change
-                    this.route =
-                        999;
-
-                }
-
-            }
-
-            // Route 4 - View Incoming Payload Change
-            else if (
-                context.updatedProperties.includes(
-                    "PCFModeIncomingPayloadJson"
-                ) ||
-                !this.pcfModeIncomingPayloadJson
-            ) {
-
-                this.pcfModeIncomingPayloadJson =
-                    context.parameters.PCFModeIncomingPayloadJson.raw ??
-                    "";
-
-                if (
-                    this.pcfModeIncomingPayloadJson !==
-                        this.previousPCFModeIncomingPayloadJson
-                ) {
-
-                    const incomingPayload =
-                        JSON.parse(
-                            this.pcfModeIncomingPayloadJson
-                        );
-
-                    incomingPayload.PayloadToPCFType =
-                        String(
-                            incomingPayload.PayloadToPCFType ?? ""
-                        ).split("|")[0];
-
-                    this.pcfModeIncomingPayloadJson =
-                        JSON.stringify(
-                            incomingPayload
-                        );
+            this.pcfModeIncomingPayloadJson =
+                JSON.stringify(
+                    incomingPayload
+                );
                     
+            // ========================================
+            // Process Incoming Payload
+            // ========================================
+
+            this.processIncomingPayload();
+
+            // ========================================
+            // Route Incoming Payload By Group
+            // ========================================
+
+            switch (
+                this.payloadGroup
+            ) {
+
+                // ========================================
+                // System
+                // ========================================
+
+                case "System":
+
+                    // Existing Reset / Mode Change / Retry / Status routing
+                    if (
+                        this.payloadType ===
+                            "Reset"
+                    ) {
+
+                        this.route =
+                            998;
+
+                    }
+                    else if (
+                        this.payloadType ===
+                            "Mode Change"
+                    ) {
+
+                        this.route =
+                            996;
+
+                    }
+                    else if (
+                        this.payloadType.startsWith(
+                            "Retry"
+                        )
+                    ) {
+
+                        this.route =
+                            997;
+
+                    }
+                    else if (
+                        this.payloadType.startsWith(
+                            "Status-200"
+                        )
+                    ) {
+
+                        this.route =
+                            200;
+
+                    }
+                    else if (
+                        this.payloadType.startsWith(
+                            "Status-400"
+                        )
+                    ) {
+
+                        this.route =
+                            400;
+
+                    }else {
+
+                        throw new Error(
+                            `[ProjectDashboard] Unsupported System Payload Type: ${this.payloadType}`
+                        );
+
+                    }
+
+                    break;
+
+                // ========================================
+                // Data
+                // ========================================
+
+                case "Data": {
+
                     // ========================================
-                    // Process Incoming Payload
+                    // Route To slot router
                     // ========================================
 
-                    this.processIncomingPayload();
+                    this.route = 4;
 
-                    // ========================================
-                    // Route Incoming Payload By Group
-                    // ========================================
+                    break;
+
+                }
+
+                // ========================================
+                // UI-Only
+                // ========================================
+
+                case "UI-Only":
 
                     switch (
-                        this.payloadGroup
+                        this.payloadType
                     ) {
 
                         // ========================================
-                        // System
+                        // Open
                         // ========================================
 
-                        case "System":
+                        case "Open":
 
-                            // Existing Reset / Mode Change / Retry / Status routing
-                            if (
-                                this.payloadType ===
-                                    "Reset"
-                            ) {
-
-                                this.route =
-                                    998;
-
-                            }
-                            else if (
-                                this.payloadType ===
-                                    "Mode Change"
-                            ) {
-
-                                this.route =
-                                    996;
-
-                            }
-                            else if (
-                                this.payloadType.startsWith(
-                                    "Retry"
-                                )
-                            ) {
-
-                                this.route =
-                                    997;
-
-                            }
-                            else if (
-                                this.payloadType.startsWith(
-                                    "Status-200"
-                                )
-                            ) {
-
-                                this.route =
-                                    200;
-
-                            }
-                            else if (
-                                this.payloadType.startsWith(
-                                    "Status-400"
-                                )
-                            ) {
-
-                                this.route =
-                                    400;
-
-                            }else {
-
-                                throw new Error(
-                                    `[ProjectDashboard] Unsupported System Payload Type: ${this.payloadType}`
-                                );
-
-                            }
+                            // Settings routing
+                            this.route =4;
 
                             break;
 
                         // ========================================
-                        // Data
+                        // Close
                         // ========================================
 
-                        case "Data": {
+                        case "Close":
 
-                            // ========================================
-                            // Route To slot router
-                            // ========================================
+                            // Settings routing
+                            this.route =4;
 
+                            break;
+
+                        // ========================================
+                        // Add
+                        // ========================================
+
+                        case "Add":
+
+                            // Add routing
                             this.route = 4;
 
                             break;
 
-                        }
 
                         // ========================================
-                        // UI-Only
+                        // Cancel
                         // ========================================
 
-                        case "UI-Only":
+                        case "Cancel":
 
-                            switch (
-                                this.payloadType
-                            ) {
-
-                                // ========================================
-                                // Open
-                                // ========================================
-
-                                case "Open":
-
-                                    // Settings routing
-                                    this.route =4;
-
-                                    break;
-
-                                // ========================================
-                                // Close
-                                // ========================================
-
-                                case "Close":
-
-                                    // Settings routing
-                                    this.route =4;
-
-                                    break;
-
-                                // ========================================
-                                // Add
-                                // ========================================
-
-                                case "Add":
-
-                                    // Add routing
-                                    this.route = 4;
-
-                                    break;
-
-
-                                // ========================================
-                                // Cancel
-                                // ========================================
-
-                                case "Cancel":
-
-                                    // Cancel routing
-                                    this.route = 4;
-
-                                    break;
-
-
-                                // ========================================
-                                // Unknown UI-Only Type
-                                // ========================================
-
-                                default:
-
-                                    throw new Error(
-                                        `[ProjectDashboard] Unsupported UI-Only Payload Type: ${this.payloadType}`
-                                    );
-
-                            }
+                            // Cancel routing
+                            this.route = 4;
 
                             break;
 
+
                         // ========================================
-                        // Unknown
+                        // Unknown UI-Only Type
                         // ========================================
 
                         default:
 
                             throw new Error(
-                                `[ProjectDashboard] Unsupported Payload Group: ${this.payloadGroup}`
+                                `[ProjectDashboard] Unsupported UI-Only Payload Type: ${this.payloadType}`
                             );
 
                     }
 
-                }
-                else {
+                    break;
 
-                    // Incoming property tickled but payload did not actually change.
+                // ========================================
+                // Unknown
+                // ========================================
 
-                    this.route =
-                        999;
+                default:
 
-                }
-
-            }
-
-            // SOON TO BE DEPRECATED - Route 5 - View Incoming status Change
-            else if (
-                context.updatedProperties.includes(
-                    "PCFModeIncomingStatus"
-                )
-            ) {
-
-                this.pcfModeIncomingStatus =
-                context.parameters.PCFModeIncomingStatus.raw ??
-                0;
-
-                if (
-                    this.pcfModeIncomingStatus !==
-                        this.previousPCFModeIncomingStatus
-                ) {
-
-                    this.route =
-                        5;
-
-                }
-                else {
-
-                    // Property tickled but value did not meaningfully change
-                    this.route =
-                        999;
-
-                }
-
-            }
-
-            // Route 6 - Outbound change
-            else if (
-                context.updatedProperties.includes(
-                    "PCFModeOutgoingPayloadJson"
-                )
-            ) {
-
-                console.log(
-                    "[ProjectDashboard] ENTER Route 6 Outbound"
-                );
-
-                this.pcfModeOutgoingPayloadJson =
-                    context.parameters.PCFModeOutgoingPayloadJson.raw ??
-                    "";
-
-                if (
-                    this.pcfModeOutgoingPayloadJson !==
-                        this.previousPCFModeOutgoingPayloadJson
-                ) {
-
-                    const outgoingPayload =
-                        JSON.parse(
-                            this.pcfModeOutgoingPayloadJson
-                        );
-
-                    console.log(
-                        "[ProjectDashboard] Outgoing Parsed:",
-                        {
-                            PayloadToPAType:
-                                outgoingPayload.PayloadToPAType,
-
-                            PayloadToPASubMode:
-                                outgoingPayload.PayloadToPAMode
-                        }
+                    throw new Error(
+                        `[ProjectDashboard] Unsupported Payload Group: ${this.payloadGroup}`
                     );
-
-                    if (
-                        outgoingPayload.PayloadToPAType === "Request" &&
-                        outgoingPayload.PayloadToPAMode === "Data"
-                    ) {
-
-                        // ========================================
-                        // Send Status 400
-                        // ========================================
-
-                        this.processDispatchPCFModeEvent(
-                            "PCFModeEventSendStatus400"
-                        );
-
-                        // Let route remain 0.
-
-                    }
-                    else {
-
-                        this.route =
-                            999;
-
-                    }
-
-                }
-                else {
-
-                    // Property tickled but value did not meaningfully change.
-                    this.route =
-                        999;
-
-                }
-
 
             }
 
         }
+        else {
+
+            // Incoming property tickled but payload did not actually change.
+
+            this.route =
+                999;
+
+        }
+
 
         console.log(
             "Middle Past Checks - Route: ",
@@ -3568,9 +2414,7 @@ export class ProjectDashboard
         // ============================================
         //
         // Route 0 = No meaningful change
-        // Route 1 = Board Change
-        // Route 2 = View Change
-        // Route 3 = View Info Change
+        // Routes 1/2/3 (PCF property changes) removed - Pass 7B
         //
 
         switch (this.route) {
@@ -3580,109 +2424,6 @@ export class ProjectDashboard
                 //Silent landing for routes that loop
                 break;
 
-            // Open
-            case 1:
-
-                this.routeInProgress = true
-
-                console.log(
-                    "Router Path 1 - Route: ",
-                    this.route
-                );
-
-                // =====================================================
-                // Complete Route
-                // =====================================================
-                
-                this.routeStatus = 200;
-                this.route = 0;
-                this.routeInProgress = false
-                this.routeHasCompleted = true
-
-                break;
-
-            // View Change
-            case 2:
-
-                this.routeInProgress = true
-
-                if (
-                    this.pcfModeViewIndex >
-                        0
-                    &&
-                    this.pcfModeViewIndex <
-                        100
-                ) {
-
-                    this.tempPcfModeViewIndex =
-                        0;
-
-                }
-
-                // =====================================================
-                // Store View Index
-                // =====================================================
-
-                this.previousPCFModeViewIndex =
-                    this.pcfModeViewIndex;
-
-                console.log(
-                    "[ProjectDashboard] Route 2 - Temp View Index:",
-                    this.tempPcfModeViewIndex
-                );
-
-                // =====================================================
-                // Complete Route
-                // =====================================================
-
-                this.routeStatus = 200;
-                this.route = 0;
-                this.routeInProgress = false
-                this.routeHasCompleted = true
-
-                break;
-
-            // View Info Change
-            case 3:
-                
-                this.routeInProgress = true
-
-                console.log(
-                    "Router Path 3 - Route: ",
-                    this.route
-                );
-
-                console.log(
-                    "[ProjectDashboard] Route 3 Check:",
-                    {
-                        raw:
-                            context.parameters.PCFModeViewInfoJson.raw,
-
-                        snapshot:
-                            this.previousPCFModeViewInfoJson,
-
-                        equal:
-                            context.parameters.PCFModeViewInfoJson.raw ===
-                            this.previousPCFModeViewInfoJson
-                    }
-                );
-
-                // Route 3 work
-
-                this.previousPCFModeViewInfoJson =
-                this.pcfModeViewInfoJson;
-
-                // =====================================================
-                // Complete Route
-                // =====================================================
-
-                this.routeStatus = 200;
-                this.route = 0;
-                this.routeInProgress = false
-                this.routeHasCompleted = true
-
-                break;
-            
             // =====================================================
             // Route 4 - Incoming Payload Change
             // =====================================================
@@ -3871,10 +2612,6 @@ export class ProjectDashboard
                                         await this.processBuildActiveState(
                                             "New",
                                             true
-                                        );
-
-                                        this.processDispatchPCFModeEvent(
-                                            "PCFModeEventSendStatus200"
                                         );
 
                                         return;
@@ -4329,10 +3066,6 @@ export class ProjectDashboard
 
                                     case 200:
 
-                                        this.processDispatchPCFModeEvent(
-                                            "PCFModeEventSendStatus200"
-                                        );
-
                                         break;
 
 
@@ -4388,10 +3121,6 @@ export class ProjectDashboard
                         !statusHandled
                     ) {
 
-                        this.processDispatchPCFModeEvent(
-                            "PCFModeEventSendStatus200"
-                        );
-
                         this.routeStatus =
                             200;
 
@@ -4421,10 +3150,6 @@ export class ProjectDashboard
                             "Unable to process dashboard request.",
                             undefined,
                             false
-                        );
-
-                        this.processDispatchPCFModeEvent(
-                            "PCFModeEventSendStatus400"
                         );
 
                         this.routeStatus =
@@ -4624,7 +3349,7 @@ export class ProjectDashboard
 
                     const payload =
                         JSON.parse(
-                            context.parameters.PCFModeIncomingPayloadJson.raw ??
+                            this.pcfModeIncomingPayloadJson ??
                             "{}"
                         );
 
@@ -4643,14 +3368,6 @@ export class ProjectDashboard
                     );
 
 
-                    // =====================================================
-                    // Status 200
-                    // =====================================================
-
-                    this.processDispatchPCFModeEvent(
-                        "PCFModeEventSendStatus200"
-                    );
-
                     this.routeStatus =
                         200;
 
@@ -4665,14 +3382,6 @@ export class ProjectDashboard
                     );
 
 
-                    // =====================================================
-                    // Status 400
-                    // =====================================================
-
-                    this.processDispatchPCFModeEvent(
-                        "PCFModeEventSendStatus400"
-                    );
-
                     this.routeStatus =
                         400;
 
@@ -4684,8 +3393,7 @@ export class ProjectDashboard
                 // =====================================================
 
                 this.previousPCFModeIncomingPayloadJson =
-                    context.parameters.PCFModeIncomingPayloadJson.raw ??
-                    "";
+                    this.pcfModeIncomingPayloadJson;
 
                 // =====================================================
                 // Complete Route
@@ -4706,7 +3414,7 @@ export class ProjectDashboard
                 this.routeInProgress = true
 
                 this.processIncomingPayload(
-                    context.parameters.PCFModeIncomingPayloadJson.raw ?? ""
+                    this.pcfModeIncomingPayloadJson
                 );
 
                 console.log(
@@ -4763,15 +3471,6 @@ export class ProjectDashboard
                                         console.log(
                                             "[ProjectDashboard] Retry - Create-New / Task-Lane"
                                         );
-
-                                        // -----------------------------------------
-                                        // Request PA Rollback Retry
-                                        // -----------------------------------------
-
-                                        this.processDispatchPCFModeEvent(
-                                            "PCFModeEventSendStatus400"
-                                        );
-
                                         break;
 
                                     default:
@@ -4832,14 +3531,9 @@ export class ProjectDashboard
             case 998:
 
                 //this.pcfModeViewType = "";
-                this.pcfModeViewInfoJson = "";
                 this.pcfModeViewIndex = 0;
-                //this.pcfModeViewContextJson = "";
 
-                this.previousPCFModeViewType = "";
-                this.previousPCFModeViewInfoJson = "";
                 this.previousPCFModeViewIndex = 0;
-                //this.previousPCFModeViewContextJson = "";
 
                 this.taskBoardSystemId = "";
                 this.taskBoardName = "";
@@ -4868,11 +3562,6 @@ export class ProjectDashboard
                 this.pcfModeViewType =
                         "Sleep";
 
-                this.outputChangeType =
-                    1;
-
-                this.processNotifyOutputChanged();
-
                 break;
 
             // Safe exit for certain workflows
@@ -4887,20 +3576,6 @@ export class ProjectDashboard
 
                 break;
             
-            // Planned Echo router - Non notify
-            case 888888:
-
-                console.log(
-                    "ProjectDashboard PCF - Route Echo | Reference:",
-                    this.routeEchoSource,
-                    "| Updated Properties:",
-                    this.routeEchoUpdatedProperties
-                );
-
-                //this.routeStatus = 888888;
-
-                break;
-
             // PCF goes to sleep
             case 999999:
 
@@ -4940,15 +3615,848 @@ export class ProjectDashboard
         }
         else {
 
-            this.resizeContainer(
-                context
-            );
-
             console.log(
                 "ProjectDashboard PCF - Happy Ending"
             );
 
         }
+
+    }
+
+    // =========================================================
+    // Process Startup
+    //
+    // Standalone Migration - Pass 7B. The Project Dashboard
+    // startup sequence, moved unchanged from the Startup section
+    // of the former updateView(): artifact store, startup
+    // deadline, user access, user session/profile, Application
+    // Version Gate, runtime view state and tabs, with its
+    // existing catch/finally error handling.
+    //
+    // Returns false wherever that section previously returned
+    // from updateView() (fatal, Shutdown, Restart Required and
+    // other terminal startup exits) so the router stops exactly
+    // as before; true when startup completed and routing
+    // continues to the Startup payload's dashboard route.
+    // =========================================================
+
+    private async processStartup(): Promise<boolean> {
+
+        console.log(
+            "Start - Route: ",
+            this.pcfModeViewType
+        );
+
+        this.processProcessingOverlay(
+            true,
+            "Checking version...",
+            "Spinner"
+        );
+
+        // ========================================
+        // Startup Azure Network Deadline State
+        //
+        // Bounds only the startup Azure network phase
+        // (Application Registry / User Access / User
+        // Profile reads). Declared here so the outer
+        // catch/finally below can classify and clear
+        // it regardless of which startup step fails.
+        // ========================================
+
+        const startupAzureTimeoutMs =
+            15000;
+
+        const startupRequestController =
+            new AbortController();
+
+        let startupRequestTimedOut =
+            false;
+
+        let startupRequestTimeout:
+            number | undefined =
+                undefined;
+
+        try {
+
+            this.routeInProgress = true
+
+            // ========================================
+            // Open Artifact Store
+            // ========================================
+
+            await this.artifactStore.open();
+
+            // ========================================
+            // Start Startup Azure Network Deadline
+            //
+            // Startup Architecture - Pass 1 (User Access
+            // First). Moved ahead of User Access, since
+            // User Access is itself the first Azure request
+            // of this Startup pass and needs this transport
+            // infrastructure (AbortController/timeout)
+            // already in place - this is infrastructure
+            // initialization, not an application-state
+            // decision, so it does not violate the
+            // User-Access-first invariant. Still covers
+            // every startup Azure read that follows,
+            // whichever one runs last.
+            // ========================================
+
+            startupRequestTimeout =
+                window.setTimeout(
+                    () => {
+
+                        startupRequestTimedOut =
+                            true;
+
+                        startupRequestController.abort();
+
+                    },
+                    startupAzureTimeoutMs
+                );
+
+
+            // ========================================
+            // Get Current User Global Access
+            //
+            // Startup Architecture - Pass 1 (User Access
+            // First). USER ACCESS IS THE FIRST APPLICATION
+            // AUTHORITY ON EVERY STARTUP - moved ahead of
+            // Application Registry retrieval and
+            // processCheckApplicationVersion. No
+            // application-state decision (local storage
+            // interpretation, Application Registry,
+            // version evaluation) occurs before this
+            // succeeds.
+            // ========================================
+
+            this.processProcessingOverlay(
+                null,
+                "Checking user access...",
+                "Spinner"
+            );
+
+            this.payloadUserEmail =
+                this.authenticatedUserEmail;
+
+            // ========================================
+            // Restart Re-Entry Context
+            //
+            // Startup Architecture - Pass 3.4 (Reset-Required
+            // Restart Model) / Pass 3.5 (True Restart
+            // Re-Entry Bypass). Temporary routing context
+            // only - never persisted as application state,
+            // never written to the artifact store. Read
+            // directly from the incoming payload (the same
+            // JSON.parse pattern already used above for
+            // PayloadToPCFUserEmail) rather than the hydrated
+            // this.payloadMode field, since Startup routing
+            // (pcfModeViewType === "Startup", decided purely by
+            // PayloadToPCFType) runs before processIncomingPayload
+            // ever hydrates this.payloadMode - that hydration
+            // only occurs on the separate Status-200/400
+            // re-entry path. PayloadToPCFMode is otherwise
+            // always "" on every existing Startup/Data-group
+            // dispatch in this codebase, so "Restart" is an
+            // unambiguous, non-colliding value - see
+            // processDispatchStartupPayload /
+            // processRestartApplication. User Validation/User
+            // Session below are NEVER bypassed by this - only
+            // the entire Section 3 Version Gate is skipped
+            // (see below), not re-run-then-suppressed.
+            // ========================================
+
+            const startupIsRestartReEntry =
+                JSON.parse(
+                    this.pcfModeIncomingPayloadJson || "{}"
+                ).PayloadToPCFMode ===
+                    "Restart";
+
+            this.currentUser =
+                await getUserAccessFromAzure(
+                    this.payloadUserEmail as string,
+                    startupRequestController.signal
+                );
+
+            // ========================================
+            // Check Current User Is Active
+            //
+            // Startup Architecture - Pass 1B (Authorization
+            // Failure Invalidates Local State). No trusted
+            // authorization means no trusted resident state -
+            // clear every resident artifact-store key and
+            // reset in-memory user-authority fields before
+            // communicating the failure. This check sits
+            // inside the outer try, so a clear failure here
+            // propagates to the existing outer catch and its
+            // established centralized error communication -
+            // no new error-handling decision is required for
+            // this specific exit.
+            // ========================================
+
+            if (
+                !this.currentUser
+            ) {
+
+                this.currentUserProfile =
+                    null;
+
+                await this.processInvalidateLocalApplicationCache();
+
+                this.showMessage(
+                    true,
+                    "Project Dashboard - User not found. Contact your administrator for access.",
+                    undefined,
+                    true,
+                    "app-fatal"
+                );
+
+                return false;
+
+            }
+
+            // ========================================
+            // Check Current User Global Access
+            //
+            // Startup Architecture - Pass 1B. Same
+            // authorization-failure invalidation as above -
+            // this.currentUser itself was truthy (User Access
+            // returned data) but carries no usable access, so
+            // it is reset to null alongside the resident
+            // store clear rather than left resident with a
+            // decoded-but-unauthorized value.
+            // ========================================
+
+            if (
+                !this.currentUser.globalAccessKeys.some(
+                    key =>
+                        key.trim().length >
+                            0
+                )
+            ) {
+
+                this.currentUser =
+                    null;
+
+                this.currentUserProfile =
+                    null;
+
+                await this.processInvalidateLocalApplicationCache();
+
+                this.showMessage(
+                    true,
+                    "Project Dashboard - Access Denied. Contact your administrator for access.",
+                    undefined,
+                    true,
+                    "app-fatal"
+                );
+
+                return false;
+
+            }
+
+            // ========================================
+            // User exists - User has Key - Start User Session
+            // ========================================
+
+            this.processProcessingOverlay(
+                null,
+                "Starting user session...",
+                "Spinner"
+            );
+
+            // ========================================
+            // Persist Current User & User Registry
+            // ========================================
+
+            await this.artifactStore.put(
+                "user:current",
+                new TextEncoder().encode(
+                    JSON.stringify(
+                        this.currentUser
+                    )
+                ).buffer
+            );
+
+            const userProfilePackage =
+                await getArtifactsFromAzure(
+                    "Other",
+                    [
+                        this.currentUser.userProfilePath
+                    ],
+                    startupRequestController.signal
+                );
+
+            const userProfileArtifacts =
+                splitAzureArtifactPackage(
+                    userProfilePackage
+                );
+
+            const userProfileArtifact =
+                userProfileArtifacts.get(
+                    `other:${this.currentUser.userProfilePath}`
+                );
+
+            if (
+                !userProfileArtifact
+            ) {
+
+                throw new Error(
+                    `[ProjectDashboard] User profile registry was not returned: ${this.currentUser.userProfilePath}`
+                );
+
+            }
+
+            await this.artifactStore.put(
+                "user:current_profile",
+                userProfileArtifact
+            );
+
+            this.currentUserProfile =
+                JSON.parse(
+                    new TextDecoder().decode(
+                        new Uint8Array(
+                            userProfileArtifact
+                        )
+                    )
+                ) as UserProfileRegistry;
+
+
+            // ========================================
+            // Application Version Gate
+            //
+            // Startup Architecture - Pass 1 (User Access
+            // First). Everything from here down is
+            // application-state processing, now
+            // structurally unreachable unless User Access
+            // above already succeeded.
+            //
+            // Startup Architecture - Pass 3.5 (True Restart
+            // Re-Entry Bypass). A Restart re-entry
+            // (startupIsRestartReEntry) skips this entire
+            // Section 3 gate - no Application Registry fetch
+            // for this purpose, no processCheckApplicationVersion
+            // call, no ApplicationVersionStatus is calculated
+            // at all. Restart mode is trusted, one-shot
+            // routing context generated internally only by
+            // processRestartApplication, itself only
+            // reachable after a prior Startup pass already
+            // completed Version Check and the user already
+            // executed the resulting action - re-evaluating
+            // the version on this same re-entry would re-run
+            // a decision that has already been made. This
+            // intentionally also skips this pass's
+            // appStatus === "Shutdown" check (it lives inside
+            // processCheckApplicationVersion, not as a
+            // separate duplicate check) - the next NORMAL
+            // Startup will evaluate it again.
+            // ========================================
+
+            if (
+                !startupIsRestartReEntry
+            ) {
+
+                // ========================================
+                // 2 - Get Application Registry
+                //
+                // Runs unconditionally - Shutdown must be
+                // detected even for a genuinely new
+                // installation with no prior local cache.
+                // ========================================
+
+                let applicationRegistryArtifact:
+                    ArrayBuffer | undefined;
+
+                try {
+
+                    applicationRegistryArtifact =
+                        await this.processFetchAuthoritativeApplicationRegistryArtifact(
+                            startupRequestController.signal
+                        );
+
+
+                    // ========================================
+                    // 2.1 - Validate Application Registry
+                    // ========================================
+
+                    if (
+                        !applicationRegistryArtifact
+                    ) {
+
+                        this.showMessage(
+                            true,
+                            "Project Dashboard - Application configuration is unavailable. Refresh your browser to try again.",
+                            "Application Registry was not returned.",
+                            true,
+                            "app-fatal"
+                        );
+
+                        return false;
+
+                    }
+
+                }
+                catch (
+                    error
+                ) {
+
+                    const errorMessage =
+                        error instanceof Error
+                            ? error.message
+                            : String(
+                                error
+                            );
+
+                    // ========================================
+                    // Startup Azure Network Deadline Exceeded
+                    //
+                    // Checked first - an aborted Application
+                    // Registry read must not fall through to
+                    // the ordinary retrieval-failure message.
+                    // ========================================
+
+                    if (
+                        startupRequestTimedOut
+                    ) {
+
+                        this.showMessage(
+                            true,
+                            "Project Dashboard - Application startup timed out. Refresh your browser to try again.",
+                            `Startup Azure deadline exceeded after ${startupAzureTimeoutMs} ms: ${errorMessage}`,
+                            true,
+                            "app-fatal"
+                        );
+
+                        return false;
+
+                    }
+
+                    this.showMessage(
+                        true,
+                        "Project Dashboard - Application configuration is unavailable. Refresh your browser to try again.",
+                        `Application Registry retrieval failed: ${errorMessage}`,
+                        true,
+                        "app-fatal"
+                    );
+
+                    return false;
+
+                }
+
+
+                // ========================================
+                // End Startup Azure Network Deadline
+                //
+                // Startup Architecture - Pass 1 (User Access
+                // First). The final startup Azure read
+                // (Application Registry, now that User
+                // Access/Profile run first) has completed.
+                // Clear the deadline immediately, before any
+                // subsequent local IndexedDB work, so that
+                // work is never charged against the network
+                // deadline.
+                // ========================================
+
+                window.clearTimeout(
+                    startupRequestTimeout
+                );
+
+
+                // ========================================
+                // 2.2 - Decode Application Registry
+                // ========================================
+
+                const applicationRegistry =
+                    JSON.parse(
+                        new TextDecoder().decode(
+                            new Uint8Array(
+                                applicationRegistryArtifact
+                            )
+                        )
+                    ) as ApplicationRegistry;
+
+
+                // ========================================
+                // 3 - Evaluate Application Version
+                //
+                // Single application-version decision model -
+                // Startup no longer maintains its own separate
+                // requiredVersion comparison beside this.
+                // ========================================
+
+                const applicationVersionStatus =
+                    await this.processCheckApplicationVersion(
+                        applicationRegistry
+                    );
+
+
+                // ========================================
+                // 3.0 - Update Available Header Visibility
+                //
+                // Startup Architecture - Pass 3.3 (Update
+                // Available Header Action). Set intentionally
+                // on every successful evaluation - Update
+                // Available is the only status that shows
+                // this button, so a prior Startup's Update
+                // Available state can never remain visible
+                // after a later Startup resolves Pass or No
+                // Local Version. Non-blocking - execution
+                // always continues below regardless of this
+                // toggle.
+                // ========================================
+
+                this.btnApplicationUpdateAvailable.classList.toggle(
+                    "application-hidden",
+                    applicationVersionStatus !==
+                        "Update Available"
+                );
+
+
+                // ========================================
+                // 3.1 - Shutdown Stops Startup
+                //
+                // The gate already invoked showMessage/app-fatal.
+                //
+                // Startup Architecture - Pass 3.6 (Version
+                // Acceptance + Registry Snapshot). Shutdown is
+                // terminal - no Restart transaction can ever
+                // complete from this state (app-fatal routes
+                // every further updateView call to the Echo
+                // router, never back through Startup), so the
+                // retained this.applicationRegistry snapshot
+                // (already set above by
+                // processCheckApplicationVersion's own Step 1)
+                // has no future consumer. Released here for
+                // the same reason resident state is released
+                // on other terminal failures elsewhere in
+                // Startup, not because Shutdown itself needed
+                // a new mechanism.
+                // ========================================
+
+                if (
+                    applicationVersionStatus ===
+                        "Shutdown"
+                ) {
+
+                    this.applicationRegistry =
+                        null;
+
+                    return false;
+
+                }
+
+
+                // ========================================
+                // 3.2 - Restart Required Preparation + Stop
+                // Startup
+                //
+                // Startup Architecture - Pass 3.7 (Restart
+                // Required Preparation + True Application
+                // Restart). The local version transaction must
+                // be fully prepared BEFORE the user is ever
+                // presented with the Restart Required UI -
+                // resolve the SAME ApplicationVersionInfo that
+                // produced this decision, optionally clear
+                // IndexedDB, then accept the triggering
+                // version, all before mounting the billboard.
+                // The Restart button itself no longer performs
+                // any of this - see processRestartApplication.
+                // A later Restart re-entry does not repeat any
+                // of this either - see the common acceptance
+                // boundary below, which now explicitly excludes
+                // Restart re-entry.
+                //
+                // Locked order: optional clear -> write version
+                // -> mount UI -> return. Never write-then-clear
+                // (would delete the version just written).
+                // Never show-then-prepare (the user must not be
+                // able to click Restart before preparation has
+                // succeeded).
+                //
+                // Neither call below is wrapped in a local
+                // try/catch - a failure in either propagates
+                // unchanged to the existing outer Startup catch,
+                // exactly like every other unguarded await in
+                // this try block. That is sufficient on its own
+                // to satisfy "the UI must not be shown as though
+                // preparation succeeded" - a thrown error skips
+                // every following line, including
+                // processMountApplicationRestartRequired below,
+                // with no new error-handling mechanism required.
+                // ========================================
+
+                if (
+                    applicationVersionStatus ===
+                        "Restart Required"
+                ) {
+
+                    const versionInfo =
+                        this.processResolveApplicationVersionInfo(
+                            applicationRegistry
+                        );
+
+                    if (
+                        versionInfo.resetRequired
+                    ) {
+
+                        await this.processInvalidateLocalApplicationCache();
+
+                    }
+
+                    await this.processAcceptApplicationVersion(
+                        versionInfo.current
+                    );
+
+                    this.applicationRegistry =
+                        null;
+
+                    this.processProcessingOverlay(
+                        false
+                    );
+
+                    this.processMountApplicationRestartRequired();
+
+                    return false;
+
+                }
+
+            }
+            else {
+
+                // ========================================
+                // 3.0 - Update Available Header Visibility -
+                // Restart Re-Entry
+                //
+                // Startup Architecture - Pass 3.5 (True
+                // Restart Re-Entry Bypass). Section 3 above
+                // was skipped entirely, so its normal
+                // per-evaluation toggle never ran - force the
+                // button hidden here instead, so a Restart
+                // re-entry can never retain a stale visible
+                // Update Available button.
+                // ========================================
+
+                this.btnApplicationUpdateAvailable.classList.add(
+                    "application-hidden"
+                );
+
+            }
+
+            // ========================================
+            // Startup Architecture - Pass 3.2 (Version
+            // Status Semantics).
+            //
+            // Obsolete acceptance workaround removed. It
+            // existed only for the retired Pass-3.1-era path
+            // where an empty local cache could itself
+            // produce "Active" - that path no longer exists
+            // (an absent system:localVersion now reports
+            // "No Local Version" directly). Section 3 itself
+            // performs zero version-acceptance writes for any
+            // status - see the common acceptance boundary
+            // immediately below.
+            // ========================================
+
+            // ========================================
+            // Common Version Acceptance Boundary
+            //
+            // Startup Architecture - Pass 3.6 (Version
+            // Acceptance + Registry Snapshot) / Pass 3.7
+            // (Restart Required Preparation + True Application
+            // Restart). Reached only by normal Startup's
+            // non-blocking outcomes - Pass, No Local Version,
+            // Update Available. Never reached by Shutdown or
+            // Restart Required (both now fully prepare-and-
+            // return earlier, above - Restart Required's own
+            // acceptance happens in its own branch, before its
+            // billboard is even shown). Explicitly EXCLUDED on
+            // Restart re-entry (startupIsRestartReEntry) - a
+            // Restart re-entry must never depend on
+            // this.applicationRegistry or attempt a second
+            // acceptance, since its version was already written
+            // during the ORIGINAL Restart Required/Update
+            // Available pass, before the user ever left that
+            // screen. this.applicationRegistry (the Application
+            // Version Gate's existing resident snapshot field -
+            // already set by processCheckApplicationVersion's
+            // own Step 1) still holds the exact registry that
+            // produced this pass's decision. Its resolved
+            // versionInfo.current is accepted through the
+            // existing processAcceptApplicationVersion before
+            // the snapshot is released - if the accept throws,
+            // it propagates to the existing outer Startup catch
+            // unchanged, and the snapshot is intentionally left
+            // intact rather than cleared ahead of a write that
+            // never succeeded.
+            // ========================================
+
+            if (
+                !startupIsRestartReEntry &&
+                this.applicationRegistry
+            ) {
+
+                const versionInfo =
+                    this.processResolveApplicationVersionInfo(
+                        this.applicationRegistry
+                    );
+
+                await this.processAcceptApplicationVersion(
+                    versionInfo.current
+                );
+
+                this.applicationRegistry =
+                    null;
+
+            }
+
+            // ========================================
+            // Startup - Move PCF Into Runtime View State
+            //
+            // Section 4 - Normal Runtime. Reached
+            // unconditionally whether Section 3 ran normally
+            // or was bypassed for Restart re-entry.
+            // ========================================
+
+            this.pcfModeViewType =
+                "View";
+
+            // =====================================================
+            // Startup - Set Tabs
+            // =====================================================
+
+            this.processBuildUserTabs("Build",0,false);
+
+
+        }
+        catch (
+            error
+        ) {
+
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : String(
+                        error
+                    );
+
+            // ========================================
+            // Startup Architecture - Pass 1B (Clear
+            // IndexedDB On Any Auth Failure).
+            //
+            // This catch is the User Auth gate's failure
+            // boundary (User Access and the User Profile
+            // fetch that depends on it both run before
+            // Application Registry/version processing - see
+            // Pass 1). ANY failure reaching this catch means
+            // the Auth gate did not complete successfully,
+            // so local state is no longer trusted -
+            // regardless of status/error type. The error
+            // TYPE only ever selects the MESSAGE
+            // (below, inside processApplicationError's
+            // classification); it never controls whether
+            // this clear runs. In-memory user-authority
+            // fields are reset alongside it so no stale
+            // authorized-user state survives either.
+            // ========================================
+
+            this.currentUser =
+                null;
+
+            this.currentUserProfile =
+                null;
+
+            await this.processInvalidateLocalApplicationCache();
+
+            // ========================================
+            // Startup Azure Network Deadline Exceeded
+            //
+            // Checked first - a timed-out User Access or
+            // User Profile read must not fall through to
+            // the existing classified failure messages.
+            // ========================================
+
+            if (
+                startupRequestTimedOut
+            ) {
+
+                this.showMessage(
+                    true,
+                    "Project Dashboard - Application startup timed out. Refresh your browser to try again.",
+                    `Startup Azure deadline exceeded after ${startupAzureTimeoutMs} ms: ${errorMessage}`,
+                    true,
+                    "app-fatal"
+                );
+
+                return false;
+
+            }
+
+            // ========================================
+            // Single Application Error Handler - Pass 3.
+            //
+            // Startup no longer classifies this failure
+            // itself - it only identifies the operation
+            // that failed (GetUserAccessFromAzure, the
+            // same identifier helpers/errors.ts's User
+            // Access classification family is already
+            // gated on) and supplies the communication
+            // adapter. The original error (an
+            // AzureArtifactError, with its real .status,
+            // for an Azure failure; a plain Error for the
+            // still-unmigrated "Artifact store is not
+            // open" case) is passed intact - no
+            // pre-normalization, no disposition override.
+            // processApplicationError normalizes,
+            // classifies, resolves disposition (Message,
+            // for every currently-known case here), and
+            // performs the resulting showMessage/app-fatal
+            // call itself. Startup only owns stopping this
+            // workflow afterward.
+            // ========================================
+
+            processApplicationError(
+                error,
+                {
+                    source:
+                        "Startup",
+
+                    operation:
+                        "GetUserAccessFromAzure"
+                },
+                this.processGetApplicationErrorCommunication()
+            );
+
+            return false;
+
+        }
+        finally {
+
+            // ========================================
+            // Defensive Startup Azure Network Deadline
+            // Cleanup
+            //
+            // Already cleared on the success path above.
+            // Clearing an already-cleared or already-fired
+            // timer is harmless - this covers every other
+            // exit (ordinary failure, timeout, early
+            // return) from the startup Azure network phase.
+            // ========================================
+
+            window.clearTimeout(
+                startupRequestTimeout
+            );
+
+            this.processProcessingOverlay(
+                false
+            );
+
+            this.routeInProgress =
+                false;
+
+        }
+
+
+        return true;
 
     }
 
@@ -5396,9 +4904,6 @@ export class ProjectDashboard
 
                             this.pcfModeViewType =
                                 "Error";
-
-                            this.previousPCFModeViewType =
-                                this.pcfModeViewType;
 
                             break;
 
@@ -6534,7 +6039,7 @@ export class ProjectDashboard
 
 
             // =====================================================
-            // Send Status 300 / Settings Close
+            // Settings Close (former Send Status 300)
             // =====================================================
 
             () => {
@@ -6556,15 +6061,6 @@ export class ProjectDashboard
                     );
 
                 }
-
-
-                // =====================================================
-                // Existing Status 300 Event
-                // =====================================================
-
-                this.processDispatchPCFModeEvent(
-                    "PCFModeEventSendStatus300"
-                );
 
             },
 
@@ -6725,20 +6221,12 @@ export class ProjectDashboard
                         "",
 
                     PayloadToPCFUserEmail:
-                        JSON.parse(
-                            this.context.parameters.PCFModeIncomingPayloadJson.raw || "{}"
-                        ).PayloadToPCFUserEmail ?? ""
+                        this.authenticatedUserEmail
                 };
 
-                this.pcfModeIncomingPayloadJson =
-                    JSON.stringify(
-                        payload
-                    );
-
-                this.outputChangeType =
-                    7;
-
-                this.processNotifyOutputChanged();
+                this.processDispatchIncomingPayload(
+                    payload
+                );
 
             },
 
@@ -9733,15 +9221,11 @@ export class ProjectDashboard
                 PayloadToPCFDecodedArtifactData:
                     "",
                 PayloadToPCFUserEmail:
-                    this.payloadUserEmail
+                    this.authenticatedUserEmail
             };
-        this.pcfModeIncomingPayloadJson =
-            JSON.stringify(
-                payload
-            );
-        this.outputChangeType =
-            7;
-        this.processNotifyOutputChanged();
+        this.processDispatchIncomingPayload(
+            payload
+        );
     }
 
     // =====================================================
@@ -9875,452 +9359,6 @@ export class ProjectDashboard
     }
 
     // =====================================================
-    // Process Retry status
-    // =====================================================
-
-    private processRetryStatus(
-        terminalRetryCount: number,
-        onTerminalFailure: () => void
-    ): boolean {
-
-        const retryCount =
-            Number(
-                this.payloadType.split("-").pop()
-            );
-
-        if (
-            retryCount >=
-            terminalRetryCount
-        ) {
-
-            onTerminalFailure();
-
-            this.pcfModeViewLoadingIsComplete =
-                true;
-
-            this.processEvent(
-                400,
-                {}
-            );
-
-            return false;
-
-        }
-
-        this.processEvent(
-            400,
-            {}
-        );
-
-        return true;
-
-    }
-
-    // =====================================================
-    // Process Event
-    // =====================================================
-
-    private async processEvent(
-        eventType: number,
-        payload: object
-    ): Promise<void> {
-
-        // =========================================================
-        // Application Terminal Gate
-        //
-        // A terminated instance must not begin new event work.
-        // =========================================================
-
-        if (
-            this.applicationTerminated
-        ) {
-
-            return;
-
-        }
-
-        /*
-            Event Type
-
-            0 = None
-            1 = CRUD
-            200 = Success shot
-            400 = Error shot
-
-        */
-
-        console.log(
-            "[ProjectDashboard] processEvent - Event Type:",
-            eventType
-        );
-
-        console.log(
-            "[ProjectDashboard] processEvent - Payload:",
-            payload
-        );
-
-        // Status events do not require an outgoing payload - fire event and exit
-        if (
-            eventType ===
-                200
-        ) {
-
-            this.processDispatchPCFModeEvent(
-                "PCFModeEventSendStatus200"
-            );
-
-            console.log(
-                "[ProjectDashboard] processEvent - Status 200 event fired"
-            );
-
-            return;
-
-        }
-
-        if (
-            eventType ===
-                400
-        ) {
-
-            this.processDispatchPCFModeEvent(
-                "PCFModeEventSendStatus400"
-            );
-
-            console.log(
-                "[ProjectDashboard] processEvent - Status 400 event fired"
-            );
-
-            return;
-
-        }
-
-        if (
-            eventType ===
-                911
-        ) {
-
-            this.processDispatchPCFModeEvent(
-                "PCFModeEventSendStatus911"
-            );
-
-            console.log(
-                "[ProjectDashboard] processEvent - Status 911 event fired"
-            );
-
-            return;
-
-        }
-
-
-        // =========================================================
-        // Build Outgoing Payload
-        // =========================================================
-
-        this.pcfModeOutgoingPayloadJson =
-            JSON.stringify(
-                payload
-            );
-
-        console.log(
-            "[ProjectDashboard] processEvent - Outgoing JSON:",
-            this.pcfModeOutgoingPayloadJson
-        );
-
-
-        // =========================================================
-        // Publish Outgoing Payload
-        // =========================================================
-
-        this.outputChangeType =
-            6;
-
-        this.routeEchoSource = "Process Event"
-        this.routeStatus = 100;
-        this.processNotifyOutputChanged();
-
-        // =========================================================
-        // Application Terminal Gate
-        //
-        // Accounts for possible synchronous host re-entry during
-        // notification.
-        // =========================================================
-
-        if (
-            this.applicationTerminated
-        ) {
-
-            return;
-
-        }
-
-        console.log(
-            "[ProjectDashboard] processEvent - Output notified"
-        );
-
-
-        // =========================================================
-        // Wait For Output Synchronization
-        // =========================================================
-
-        let attempt =
-            0;
-
-        const maxAttempts =
-            25;
-
-        while (
-            (
-                this.context.parameters
-                    .PCFModeOutgoingPayloadJson.raw ??
-                ""
-            ) !==
-            this.pcfModeOutgoingPayloadJson
-            &&
-            attempt <
-                maxAttempts
-        ) {
-
-            await new Promise<void>(
-                resolve => {
-
-                    setTimeout(
-                        resolve,
-                        20
-                    );
-
-                }
-            );
-
-            if (
-                this.applicationTerminated
-            ) {
-
-                return;
-
-            }
-
-            attempt++;
-
-        }
-
-
-        // =========================================================
-        // Validate Output Synchronization
-        // =========================================================
-
-        if (
-            (
-                this.context.parameters
-                    .PCFModeOutgoingPayloadJson.raw ??
-                ""
-            ) !==
-            this.pcfModeOutgoingPayloadJson
-        ) {
-
-            console.error(
-                "[ProjectDashboard] processEvent - Payload synchronization failed"
-            );
-
-        }
-
-        console.log(
-            "[ProjectDashboard] processEvent - Payload synchronized after attempts:",
-            attempt
-        );
-
-
-        // =========================================================
-        // Route Event
-        // =========================================================
-
-        switch (
-            eventType
-        ) {
-
-            // CRUD
-            case 1:
-
-                this.processDispatchPCFModeEvent(
-                    "PCFModeEventCrud"
-                );
-
-                console.log(
-                    "[ProjectDashboard] processEvent - CRUD event fired"
-                );
-
-                break;
-
-
-            // Status 200
-            case 200:
-
-                this.processDispatchPCFModeEvent(
-                    "PCFModeEventSendStatus200"
-                );
-
-                console.log(
-                    "[ProjectDashboard] processEvent - Status 200 event fired"
-                );
-
-                break;
-
-
-            // Status 400
-            case 400:
-
-                this.processDispatchPCFModeEvent(
-                    "PCFModeEventSendStatus400"
-                );
-
-                console.log(
-                    "[ProjectDashboard] processEvent - Status 400 event fired"
-                );
-
-                break;
-
-            // Status 911
-            case 911:
-
-                this.processDispatchPCFModeEvent(
-                    "PCFModeEventSendStatus911"
-                );
-
-                console.log(
-                    "[ProjectDashboard] processEvent - Status 911 event fired"
-                );
-
-                break;
-
-            default:
-
-                console.warn(
-                    "[ProjectDashboard] processEvent - Unknown Event Type:",
-                    eventType
-                );
-
-                break;
-
-        }
-
-    }
-
-    // =====================================================
-    // Process Get Outputs
-    // =====================================================
-
-    public getOutputs(): IOutputs {
-
-        /*
-            Output Change Type
-
-            0 = None
-            1 = View Type
-            2 = View Info JSON
-            3 = View Index
-            4 = View Context JSON
-            5 = View Loading Is Complete
-            6 = Outgoing Payload JSON
-        */
-
-        let outputs:
-            IOutputs = {};
-
-        switch (
-            this.outputChangeType
-        ) {
-
-            case 1:
-
-                this.outputChangeType =
-                    0;
-
-                return {
-                    PCFModeViewType:
-                        this.pcfModeViewType
-                };
-
-
-            case 2:
-
-                this.outputChangeType =
-                    0;
-
-                return {
-                    PCFModeViewInfoJson:
-                        this.pcfModeViewInfoJson
-                };
-
-
-            case 3:
-
-                this.outputChangeType =
-                    0;
-
-                return {
-                    PCFModeViewIndex:
-                        this.pcfModeViewIndex
-                };
-
-
-            case 4:
-
-                this.outputChangeType =
-                    0;
-
-                return {
-                    PCFModeViewContextJson:
-                        this.pcfModeViewContextJson
-                };
-
-
-            case 5:
-
-                this.outputChangeType =
-                    0;
-
-                return {
-                    PCFModeViewLoadingIsComplete:
-                        this.pcfModeViewLoadingIsComplete
-                };
-
-
-            case 6:
-
-                this.outputChangeType =
-                    0;
-
-                return {
-                    PCFModeOutgoingPayloadJson:
-                        this.pcfModeOutgoingPayloadJson
-                };
-
-            case 7:
-
-                this.outputChangeType =
-                    0;
-
-                return {
-                    PCFModeIncomingPayloadJson:
-                        this.pcfModeIncomingPayloadJson
-                };
-
-
-            default:
-
-                outputs = {};
-
-                break;
-
-        }
-
-        // Clear Output Change Type
-        this.outputChangeType = 0;
-
-        return outputs;
-
-    }
-
-    // =====================================================
     // Destroy
     // =====================================================
 
@@ -10375,34 +9413,6 @@ export class ProjectDashboard
         this.container.replaceChildren();
 
     }
-
-    // =====================================================
-    // Resize
-    // =====================================================
-
-    private resizeContainer(
-        context:
-            ComponentFramework.Context<IInputs>
-    ): void {
-
-        const height =
-            context.mode.allocatedHeight;
-
-        const width =
-            context.mode.allocatedWidth;
-
-        this.container.style.height =
-            height > 0
-                ? `${height}px`
-                : "100%";
-
-        this.container.style.width =
-            width > 0
-                ? `${width}px`
-                : "100%";
-
-    }
-
 
     // ========================================
     // Process Dashboard Special Mode
