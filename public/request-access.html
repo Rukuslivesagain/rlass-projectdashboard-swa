@@ -22,7 +22,10 @@
 
       /* =====================================================
          Request Access Composition
-         Centered horizontally and vertically.
+         Four explicit row containers own the vertical layout;
+         child components own only their visual appearance and
+         control dimensions. The composition sizes naturally from
+         its rows and is centered horizontally and vertically.
          ===================================================== */
 
       body {
@@ -33,6 +36,25 @@
         justify-content: center;
       }
 
+      .request-access-composition {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* Row containers - layout only (no background, border or
+         outline). Each row supplies its own vertical space. */
+      .request-access-status-row,
+      .request-access-branding-row,
+      .request-access-controls-row,
+      .request-access-signout-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        padding: 8px 0;
+      }
+
       /* Uniform enlargement of the header branding. zoom scales
          every font size and spacing below by the same factor, so
          all relationships remain identical to the header. */
@@ -40,14 +62,14 @@
         zoom: 2.5;
       }
 
-      /* Status indicator - non-selected dashboard tab formatting.
+      /* Status banner - non-selected dashboard tab formatting.
          Visual values copied exactly from src/css/tabs.css
          (.project-dashboard-tabs-tab). Not interactive: no hover,
-         default cursor; width matches the request row. */
+         default cursor; width matches the controls group. */
       .request-access-status {
         display: flex;
         width: 476px;
-        height: 40px;
+        height: 80px;
         align-items: center;
         justify-content: center;
         padding: 0 10px;
@@ -61,17 +83,12 @@
         white-space: nowrap;
       }
 
-      .request-access-branding-position {
-        margin: 32px 0 0 0;
-      }
-
-      /* Request row - locked geometry: 320 + 16 + 140 = 476px,
+      /* Controls group - locked geometry: 320 + 16 + 140 = 476px,
          matching the status banner width. */
-      .request-access-row {
+      .request-access-controls {
         display: flex;
         align-items: center;
         gap: 16px;
-        margin: 48px 0 0 0;
       }
 
       .request-access-email {
@@ -90,15 +107,11 @@
         flex: 0 0 140px;
       }
 
-      .request-access-sign-out {
-        margin: 24px 0 0 0;
-      }
-
       /* Sign out - non-selected dashboard tab formatting.
          Visual values copied exactly from src/css/tabs.css
          (.project-dashboard-tabs-tab and its :hover). Native
          anchor; interactive, so it keeps pointer and hover. */
-      .request-access-sign-out a {
+      .request-access-sign-out {
         display: flex;
         width: 120px;
         height: 40px;
@@ -117,7 +130,7 @@
         white-space: nowrap;
       }
 
-      .request-access-sign-out a:hover {
+      .request-access-sign-out:hover {
         background: rgba(0, 255, 0, .10);
         border-color: rgba(0, 255, 0, .18);
         color: rgba(235, 255, 235, .95);
@@ -268,27 +281,33 @@
   </head>
   <body>
     <!-- Standalone host page - served by staticwebapp.config.json (403 override). -->
-    <span class="request-access-status">User not found.</span>
-    <div class="request-access-branding-position">
-      <div class="request-access-branding">
-        <div class="application-header-left">
-          <div class="application-header-application-name"><span class="application-header-application-name-active">Active</span><span class="application-header-application-name-manager">Manager</span></div>
-          <span class="application-header-separator">|</span>
-          <span class="application-header-module-name">project dashboard</span>
+    <div class="request-access-composition">
+      <div class="request-access-status-row">
+        <span class="request-access-status">User not found.</span>
+      </div>
+      <div class="request-access-branding-row">
+        <div class="request-access-branding">
+          <div class="application-header-left">
+            <div class="application-header-application-name"><span class="application-header-application-name-active">Active</span><span class="application-header-application-name-manager">Manager</span></div>
+            <span class="application-header-separator">|</span>
+            <span class="application-header-module-name">project dashboard</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="request-access-row">
-      <div class="request-access-email">
-        <input type="email" id="request-access-email" class="project-dashboard-settings-select" value="" aria-label="Signed-in email" disabled />
+      <div class="request-access-controls-row">
+        <div class="request-access-controls">
+          <div class="request-access-email">
+            <input type="email" id="request-access-email" class="project-dashboard-settings-select" value="" aria-label="Signed-in email" disabled />
+          </div>
+          <!-- Visual only: no form, no handler, no request. Request workflow is a future pass. -->
+          <div class="request-access-action">
+            <button type="button" class="project-dashboard-tabs-tab project-dashboard-tabs-tab-selected">Request Access</button>
+          </div>
+        </div>
       </div>
-      <!-- Visual only: no form, no handler, no request. Request workflow is a future pass. -->
-      <div class="request-access-action">
-        <button type="button" class="project-dashboard-tabs-tab project-dashboard-tabs-tab-selected">Request Access</button>
+      <div class="request-access-signout-row">
+        <a class="request-access-sign-out" href="/.auth/logout">Sign out</a>
       </div>
-    </div>
-    <div class="request-access-sign-out">
-      <a href="/.auth/logout">Sign out</a>
     </div>
     <script>
       // Display only: show the signed-in SWA identity. Reads
