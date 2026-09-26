@@ -41,7 +41,7 @@
       }
 
       .sign-in-action {
-        margin: 32px 0 0 0;
+        margin: 40px 0 0 0;
       }
 
       /* =====================================================
@@ -112,22 +112,41 @@
       }
 
       /* =====================================================
-         Application Action Button
-         Copied verbatim from src/css/application.css
-         (.application-message-action).
+         Selected Dashboard Tab
+         Copied verbatim from src/css/tabs.css (tab, hover,
+         selected). Keep in sync with the application tabs.
          ===================================================== */
 
-      .application-message-action {
-        margin-top: 8px;
-        padding: 10px 28px;
-        font-family: "Segoe UI", sans-serif;
-        font-size: 14px;
-        font-weight: 600;
-        color: rgba(0, 0, 0, .90);
-        background: rgba(255, 255, 255, .92);
-        border: none;
-        border-radius: 4px;
+      .project-dashboard-tabs-tab {
+        display: flex;
+        flex: 0 0 120px;
+        width: 120px;
+        height: 32px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 10px;
+        box-sizing: border-box;
+        text-align: left;
+        border: 1px solid rgba(0, 255, 0, .10);
+        border-bottom: 0;
+        border-radius: 6px 6px 0 0;
+        color: rgba(225, 255, 225, .85);
+        background: rgba(0, 255, 0, .05);
+        font: inherit;
         cursor: pointer;
+      }
+
+      .project-dashboard-tabs-tab:hover {
+        background: rgba(0, 255, 0, .10);
+        border-color: rgba(0, 255, 0, .18);
+        color: rgba(235, 255, 235, .95);
+      }
+
+      .project-dashboard-tabs-tab-selected {
+        background: rgba(0, 255, 0, .15);
+        border-color: rgba(0, 255, 0, .25);
+        color: rgba(235, 255, 235, 1);
       }
     </style>
   </head>
@@ -141,7 +160,7 @@
       </div>
     </div>
     <form class="sign-in-action" method="get" action="/.auth/login/aad">
-      <button type="submit" class="application-message-action">Sign in</button>
+      <button type="submit" class="project-dashboard-tabs-tab project-dashboard-tabs-tab-selected">Sign in</button>
     </form>
   </body>
 </html>

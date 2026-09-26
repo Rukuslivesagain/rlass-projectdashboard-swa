@@ -6,29 +6,252 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project Dashboard - Access Request Required</title>
     <style>
-      html, body {
+      /* =====================================================
+         Standalone Host Environment
+         Same values as src/css/host.css.
+         ===================================================== */
+
+      html,
+      body {
         margin: 0;
         padding: 0;
         background-color: #010409;
         color: #c9d1d9;
         font-family: "Segoe UI", sans-serif;
       }
-      main {
-        padding: 24px;
+
+      /* =====================================================
+         Request Access Composition
+         Centered horizontally and vertically.
+         ===================================================== */
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Uniform enlargement of the header branding. zoom scales
+         every font size and spacing below by the same factor, so
+         all relationships remain identical to the header. */
+      .request-access-branding {
+        zoom: 2.5;
+      }
+
+      .request-access-message {
+        margin: 40px 0 0 0;
         font-size: 14px;
         line-height: 1.5;
+        text-align: center;
       }
-      a {
+
+      .request-access-message p {
+        margin: 0;
+      }
+
+      .request-access-email {
+        width: 320px;
+        margin: 24px 0 0 0;
+      }
+
+      .request-access-action {
+        margin: 24px 0 0 0;
+      }
+
+      .request-access-sign-out {
+        margin: 24px 0 0 0;
+        font-size: 14px;
+      }
+
+      .request-access-sign-out a {
         color: #58a6ff;
+      }
+
+      /* =====================================================
+         Application Header Branding
+         Copied verbatim from src/css/application.css - the
+         application stylesheet is not served to users without
+         access. Keep in sync with the application header.
+         ===================================================== */
+
+      .application-header-left {
+        display: flex;
+        flex: 1 1 auto;
+        align-items: center;
+        min-width: 0;
+        min-height: 0;
+        gap: 8px;
+        overflow: hidden;
+      }
+
+      .application-header-application-name {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        min-width: 0;
+        gap: 0;
+        white-space: nowrap;
+      }
+
+      .application-header-application-name-active {
+        color: #8b949e;
+        font-family: "Segoe UI", sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        white-space: nowrap;
+        user-select: none;
+      }
+
+      .application-header-application-name-manager {
+        color: rgba(255, 255, 255, .92);
+        font-family: "Segoe UI", sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        white-space: nowrap;
+        user-select: none;
+      }
+
+      .application-header-separator {
+        flex: 0 0 auto;
+        color: #6e7681;
+        font-family: "Segoe UI", sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        white-space: nowrap;
+        user-select: none;
+      }
+
+      .application-header-module-name {
+        flex: 0 1 auto;
+        min-width: 0;
+        color: rgba(0, 255, 0, .40);
+        font-family: "Segoe UI", sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        user-select: none;
+      }
+
+      /* =====================================================
+         Selected Dashboard Tab
+         Copied verbatim from src/css/tabs.css (tab, hover,
+         selected). Keep in sync with the application tabs.
+         ===================================================== */
+
+      .project-dashboard-tabs-tab {
+        display: flex;
+        flex: 0 0 120px;
+        width: 120px;
+        height: 32px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 10px;
+        box-sizing: border-box;
+        text-align: left;
+        border: 1px solid rgba(0, 255, 0, .10);
+        border-bottom: 0;
+        border-radius: 6px 6px 0 0;
+        color: rgba(225, 255, 225, .85);
+        background: rgba(0, 255, 0, .05);
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .project-dashboard-tabs-tab:hover {
+        background: rgba(0, 255, 0, .10);
+        border-color: rgba(0, 255, 0, .18);
+        color: rgba(235, 255, 235, .95);
+      }
+
+      .project-dashboard-tabs-tab-selected {
+        background: rgba(0, 255, 0, .15);
+        border-color: rgba(0, 255, 0, .25);
+        color: rgba(235, 255, 235, 1);
+      }
+
+      /* =====================================================
+         Application Field
+         Copied verbatim from src/css/overlays.css (settings
+         field, including its disabled state).
+         ===================================================== */
+
+      .project-dashboard-settings-select {
+        width: 100%;
+        height: 32px;
+        padding: 0 8px;
+        box-sizing: border-box;
+        background: #0d1117;
+        border: 1px solid rgba(255, 255, 255, .12);
+        border-radius: 4px;
+        color: rgba(255, 255, 255, .90);
+      }
+
+      .project-dashboard-settings-select:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+      }
+
+      /* =====================================================
+         Request Access Label Fit
+         The tab's fixed 120px width wraps "Request Access".
+         Width only - every visual property above is unchanged.
+         ===================================================== */
+
+      .request-access-action .project-dashboard-tabs-tab {
+        width: auto;
+        flex: 0 0 auto;
+        white-space: nowrap;
       }
     </style>
   </head>
   <body>
     <!-- Standalone host page - served by staticwebapp.config.json (403 override). -->
-    <main>
-      <p>Project Dashboard - Access Request Required.</p>
-      <p>You are signed in, but your account is not currently authorized to enter ActiveManager.</p>
+    <div class="request-access-branding">
+      <div class="application-header-left">
+        <div class="application-header-application-name"><span class="application-header-application-name-active">Active</span><span class="application-header-application-name-manager">Manager</span></div>
+        <span class="application-header-separator">|</span>
+        <span class="application-header-module-name">project dashboard</span>
+      </div>
+    </div>
+    <div class="request-access-message">
+      <p>User not found.</p>
+    </div>
+    <div class="request-access-email">
+      <input type="email" id="request-access-email" class="project-dashboard-settings-select" value="" aria-label="Signed-in email" disabled />
+    </div>
+    <!-- Visual only: no form, no handler, no request. Request workflow is a future pass. -->
+    <div class="request-access-action">
+      <button type="button" class="project-dashboard-tabs-tab project-dashboard-tabs-tab-selected">Request Access</button>
+    </div>
+    <div class="request-access-sign-out">
       <a href="/.auth/logout">Sign out</a>
-    </main>
+    </div>
+    <script>
+      // Display only: show the signed-in SWA identity. Reads
+      // /.auth/me (same origin); leaves the field blank if the
+      // identity cannot be resolved. No other requests.
+      (async function () {
+        const field = document.getElementById("request-access-email");
+        try {
+          const response = await fetch("/.auth/me", { cache: "no-store" });
+          const contentType = response.headers.get("content-type") || "";
+          if (!response.ok || !contentType.includes("application/json")) {
+            return;
+          }
+          const authContext = await response.json();
+          const userDetails = authContext && authContext.clientPrincipal && authContext.clientPrincipal.userDetails;
+          if (typeof userDetails === "string") {
+            field.value = userDetails.trim();
+          }
+        } catch (error) {
+          // Leave the field blank.
+        }
+      })();
+    </script>
   </body>
 </html>
