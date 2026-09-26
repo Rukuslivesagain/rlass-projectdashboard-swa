@@ -47,7 +47,7 @@
       .request-access-status {
         display: flex;
         width: 476px;
-        height: 32px;
+        height: 40px;
         align-items: center;
         justify-content: center;
         padding: 0 10px;
@@ -62,7 +62,7 @@
       }
 
       .request-access-branding-position {
-        margin: 24px 0 0 0;
+        margin: 32px 0 0 0;
       }
 
       /* Request row - locked geometry: 320 + 16 + 140 = 476px,
@@ -71,12 +71,18 @@
         display: flex;
         align-items: center;
         gap: 16px;
-        margin: 40px 0 0 0;
+        margin: 48px 0 0 0;
       }
 
       .request-access-email {
         width: 320px;
         flex: 0 0 320px;
+      }
+
+      /* Host-page control height (40px) - overrides only the
+         32px height of the verbatim settings field below. */
+      .request-access-email .project-dashboard-settings-select {
+        height: 40px;
       }
 
       .request-access-action {
@@ -95,7 +101,7 @@
       .request-access-sign-out a {
         display: flex;
         width: 120px;
-        height: 32px;
+        height: 40px;
         align-items: center;
         justify-content: center;
         padding: 0 10px;
@@ -248,11 +254,13 @@
          Request Access Label Fit
          The tab's fixed 120px width wraps "Request Access";
          locked at 140px (request row: 320 + 16 + 140 = 476px).
-         Width only - every visual property above is unchanged.
+         Width and host-page height (40px) only - every visual
+         property above is unchanged.
          ===================================================== */
 
       .request-access-action .project-dashboard-tabs-tab {
         width: 140px;
+        height: 40px;
         flex: 0 0 140px;
         white-space: nowrap;
       }
