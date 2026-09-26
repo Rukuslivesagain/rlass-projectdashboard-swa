@@ -30,15 +30,36 @@ body {
   justify-content: center;
 }
 
+/* Branding band - 150px; centers the branding horizontally and
+   vertically. Not zoomed: a height on a zoomed element would be
+   multiplied by the zoom factor. */
+.sign-in-branding {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  min-height: 150px;
+  flex: 0 0 150px;
+}
+
 /* Uniform enlargement of the header branding. zoom scales
    every font size and spacing below by the same factor, so
    all relationships remain identical to the header. */
-.sign-in-branding {
+.sign-in-branding > .application-header-left {
   zoom: 2.5;
 }
 
+/* Footer band - 50px; centers the Sign in button (30px) with
+   10px above and below. No margin between the bands. */
 .sign-in-action {
-  margin: 40px 0 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  min-height: 50px;
+  flex: 0 0 50px;
+  padding: 0;
+  margin: 0;
 }
 
 /* =====================================================
@@ -110,15 +131,17 @@ body {
 
 /* =====================================================
    Selected Dashboard Tab
-   Copied verbatim from src/css/tabs.css (tab, hover,
-   selected). Keep in sync with the application tabs.
+   Derived from src/css/tabs.css (tab, hover, selected).
+   Complete border on all four sides with a 6px radius on
+   this page (the application tab has an open bottom edge).
    ===================================================== */
 
 .project-dashboard-tabs-tab {
   display: flex;
   flex: 0 0 120px;
   width: 120px;
-  height: 32px;
+  height: 30px;
+  min-height: 30px;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -126,8 +149,7 @@ body {
   box-sizing: border-box;
   text-align: left;
   border: 1px solid rgba(0, 255, 0, .10);
-  border-bottom: 0;
-  border-radius: 6px 6px 0 0;
+  border-radius: 6px;
   color: rgba(225, 255, 225, .85);
   background: rgba(0, 255, 0, .05);
   font: inherit;
