@@ -21,11 +21,12 @@
       }
 
       /* =====================================================
-         Request Access Composition
-         Four explicit row containers own the vertical layout;
-         child components own only their visual appearance and
-         control dimensions. The composition sizes naturally from
-         its rows and is centered horizontally and vertically.
+         Request Access Composition - Locked Four-Band Layout
+         HEADER 50px | BODY 200px | FOOTER 1 50px | FOOTER 2 50px
+         = 350px. The bands own the vertical layout through their
+         fixed heights (no vertical padding or margins); every
+         visual control is fixed at 30px (10px above and below in
+         each 50px band). Centered horizontally and vertically.
          ===================================================== */
 
       body {
@@ -42,17 +43,31 @@
         align-items: center;
       }
 
-      /* Row containers - layout only (no background, border or
-         outline). Each row supplies its own vertical space. */
-      .request-access-status-row,
-      .request-access-branding-row,
-      .request-access-controls-row,
-      .request-access-signout-row {
+      /* Bands - layout only; flex is used only for centering. */
+      .request-access-header,
+      .request-access-body,
+      .request-access-footer-1,
+      .request-access-footer-2 {
         display: flex;
-        justify-content: center;
         align-items: center;
+        justify-content: center;
         box-sizing: border-box;
-        padding: 8px 0;
+        flex-grow: 0;
+        flex-shrink: 0;
+      }
+
+      .request-access-header,
+      .request-access-footer-1,
+      .request-access-footer-2 {
+        height: 50px;
+        min-height: 50px;
+        flex: 0 0 50px;
+      }
+
+      .request-access-body {
+        height: 200px;
+        min-height: 200px;
+        flex: 0 0 200px;
       }
 
       /* Uniform enlargement of the header branding. zoom scales
@@ -60,16 +75,19 @@
          all relationships remain identical to the header. */
       .request-access-branding {
         zoom: 2.5;
+        flex-shrink: 0;
       }
 
-      /* Status banner - non-selected dashboard tab formatting.
+      /* Status - non-selected dashboard tab formatting.
          Visual values copied exactly from src/css/tabs.css
          (.project-dashboard-tabs-tab). Not interactive: no hover,
          default cursor; width matches the controls group. */
       .request-access-status {
         display: flex;
         width: 476px;
-        height: 80px;
+        height: 30px;
+        min-height: 30px;
+        flex-shrink: 0;
         align-items: center;
         justify-content: center;
         padding: 0 10px;
@@ -84,26 +102,39 @@
       }
 
       /* Controls group - locked geometry: 320 + 16 + 140 = 476px,
-         matching the status banner width. */
+         matching the status width. */
       .request-access-controls {
         display: flex;
         align-items: center;
         gap: 16px;
+        height: 30px;
+        min-height: 30px;
+        flex-shrink: 0;
       }
 
+      /* Control wrappers are flex containers fixed at 30px so no
+         inline line box / line-height can set their height. */
       .request-access-email {
+        display: flex;
         width: 320px;
+        height: 30px;
+        min-height: 30px;
         flex: 0 0 320px;
       }
 
-      /* Host-page control height (40px) - overrides only the
+      /* Host-page control height (30px) - overrides only the
          32px height of the verbatim settings field below. */
       .request-access-email .project-dashboard-settings-select {
-        height: 40px;
+        height: 30px;
+        min-height: 30px;
+        flex: 0 0 auto;
       }
 
       .request-access-action {
+        display: flex;
         width: 140px;
+        height: 30px;
+        min-height: 30px;
         flex: 0 0 140px;
       }
 
@@ -114,7 +145,9 @@
       .request-access-sign-out {
         display: flex;
         width: 120px;
-        height: 40px;
+        height: 30px;
+        min-height: 30px;
+        flex-shrink: 0;
         align-items: center;
         justify-content: center;
         padding: 0 10px;
@@ -267,13 +300,14 @@
          Request Access Label Fit
          The tab's fixed 120px width wraps "Request Access";
          locked at 140px (request row: 320 + 16 + 140 = 476px).
-         Width and host-page height (40px) only - every visual
+         Width and host-page height (30px) only - every visual
          property above is unchanged.
          ===================================================== */
 
       .request-access-action .project-dashboard-tabs-tab {
         width: 140px;
-        height: 40px;
+        height: 30px;
+        min-height: 30px;
         flex: 0 0 140px;
         white-space: nowrap;
       }
@@ -282,10 +316,10 @@
   <body>
     <!-- Standalone host page - served by staticwebapp.config.json (403 override). -->
     <div class="request-access-composition">
-      <div class="request-access-status-row">
+      <div class="request-access-header">
         <span class="request-access-status">User not found.</span>
       </div>
-      <div class="request-access-branding-row">
+      <div class="request-access-body">
         <div class="request-access-branding">
           <div class="application-header-left">
             <div class="application-header-application-name"><span class="application-header-application-name-active">Active</span><span class="application-header-application-name-manager">Manager</span></div>
@@ -294,7 +328,7 @@
           </div>
         </div>
       </div>
-      <div class="request-access-controls-row">
+      <div class="request-access-footer-1">
         <div class="request-access-controls">
           <div class="request-access-email">
             <input type="email" id="request-access-email" class="project-dashboard-settings-select" value="" aria-label="Signed-in email" disabled />
@@ -305,7 +339,7 @@
           </div>
         </div>
       </div>
-      <div class="request-access-signout-row">
+      <div class="request-access-footer-2">
         <a class="request-access-sign-out" href="/.auth/logout">Sign out</a>
       </div>
     </div>
