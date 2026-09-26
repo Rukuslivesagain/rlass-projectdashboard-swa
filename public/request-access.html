@@ -28,6 +28,16 @@
       </div>
     </div>
     <script>
+      // Supplementary identity for the future access request.
+      // Page-local only (never displayed, not persisted). Filled
+      // from the same /.auth/me lookup below; the server treats
+      // these values as untrusted metadata.
+      const requestAccessIdentity = {
+        userDisplayName: "",
+        tenantId: "",
+        objectId: ""
+      };
+
       // Display only: show the signed-in SWA identity. Reads
       // /.auth/me (same origin); leaves the field blank if the
       // identity cannot be resolved. No other requests.
@@ -44,6 +54,14 @@
           if (typeof userDetails === "string") {
             field.value = userDetails.trim();
           }
+          const claims = (authContext && authContext.clientPrincipal && authContext.clientPrincipal.claims) || [];
+          const claimValue = function (type) {
+            const claim = Array.isArray(claims) ? claims.find(function (c) { return c && c.typ === type; }) : null;
+            return claim && typeof claim.val === "string" ? claim.val.trim() : "";
+          };
+          requestAccessIdentity.userDisplayName = claimValue("name");
+          requestAccessIdentity.objectId = claimValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
+          requestAccessIdentity.tenantId = claimValue("http://schemas.microsoft.com/identity/claims/tenantid");
         } catch (error) {
           // Leave the field blank.
         }

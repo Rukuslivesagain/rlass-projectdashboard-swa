@@ -7,7 +7,10 @@
 // requests. The caller's identity comes ONLY from the
 // trusted SWA principal (x-ms-client-principal, injected by
 // Azure Static Web Apps) - never from the request body.
-// The browser supplies only requestedEnvironment.
+// The browser supplies only requestedEnvironment and the
+// supplementary identity metadata (userDisplayName, tenantId,
+// objectId), which is validated but never trusted over the
+// principal.
 //
 // TEMPORARY: returns a diagnostic "Validated" response. No
 // FAP call, no registry write, no email - future passes.
@@ -87,7 +90,35 @@ module.exports = async function (context, req) {
         }
 
         // =====================================================
-        // 4 - Temporary Diagnostic Response
+        // 4 - Supplementary Identity (browser-supplied, untrusted)
+        //
+        // userDisplayName / tenantId / objectId come from the
+        // browser's /.auth/me claims. They are validated as
+        // metadata only and can never replace the trusted
+        // principal values (userEmail, identityProvider,
+        // swaUserId), which are read exclusively from
+        // x-ms-client-principal above.
+        // =====================================================
+
+        const identity =
+            readSupplementaryIdentity(
+                body && body.identity
+            );
+
+        if (
+            !identity
+        ) {
+
+            context.log.warn("[RequestAccess] Rejected: invalid or missing identity.");
+
+            respond(context, 400, { error: "Invalid or missing identity." });
+
+            return;
+
+        }
+
+        // =====================================================
+        // 5 - Temporary Diagnostic Response
         // =====================================================
 
         context.log("[RequestAccess] Validated.");
@@ -99,7 +130,10 @@ module.exports = async function (context, req) {
                 result: "Validated",
                 requestedEnvironment,
                 userEmail: principal.userDetails,
+                userDisplayName: identity.userDisplayName,
                 identityProvider: principal.identityProvider,
+                tenantId: identity.tenantId,
+                objectId: identity.objectId,
                 swaUserId: principal.userId
             }
         );
@@ -208,6 +242,63 @@ function readClientPrincipal(header) {
             userDetails: principal.userDetails.trim(),
             userId: principal.userId.trim()
         }
+    };
+
+}
+
+// =====================================================
+// Read Supplementary Identity
+//
+// Returns { userDisplayName, tenantId, objectId } (trimmed)
+// or null. All three are required; tenantId and objectId
+// must be syntactically valid GUIDs. Nothing is fabricated
+// or substituted. Any other fields are ignored.
+// =====================================================
+
+const GUID_PATTERN =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function readSupplementaryIdentity(identity) {
+
+    if (
+        !identity ||
+        typeof identity !== "object" ||
+        Array.isArray(identity)
+    ) {
+
+        return null;
+
+    }
+
+    const text =
+        value =>
+            typeof value === "string"
+                ? value.trim()
+                : "";
+
+    const userDisplayName =
+        text(identity.userDisplayName);
+
+    const tenantId =
+        text(identity.tenantId);
+
+    const objectId =
+        text(identity.objectId);
+
+    if (
+        userDisplayName.length === 0 ||
+        !GUID_PATTERN.test(tenantId) ||
+        !GUID_PATTERN.test(objectId)
+    ) {
+
+        return null;
+
+    }
+
+    return {
+        userDisplayName,
+        tenantId,
+        objectId
     };
 
 }
