@@ -25,7 +25,19 @@
             ]
         },
         {
+            "route": "/sign-in.css",
+            "allowedRoles": [
+                "anonymous"
+            ]
+        },
+        {
             "route": "/request-access.html",
+            "allowedRoles": [
+                "authenticated"
+            ]
+        },
+        {
+            "route": "/request-access.css",
             "allowedRoles": [
                 "authenticated"
             ]

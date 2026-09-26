@@ -1,0 +1,242 @@
+/* =====================================================
+   Request Access - page-owned stylesheet
+   Owned exclusively by public/request-access.html.
+
+   Visual language matches the Project Dashboard
+   application (host colors, header branding, dashboard
+   tab states, settings field) without importing or
+   copying application component layout rules.
+   ===================================================== */
+
+/* =====================================================
+   Host Environment
+   Same values as src/css/host.css.
+   ===================================================== */
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #010409;
+    color: #c9d1d9;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =====================================================
+   Composition - Four Direct-Child Bands
+   HEADER 50px | BODY 150px | FOOTER 1 50px | FOOTER 2 50px
+   = 300px. The four bands are the only layout containers;
+   every visual element is a direct child of its band. No
+   vertical padding, margins, gaps or spacers between bands.
+   Every control is fixed at 30px (10px above and below in
+   each 50px band). Centered in the viewport.
+   ===================================================== */
+
+.request-access-composition {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.request-access-header,
+.request-access-body,
+.request-access-footer-1,
+.request-access-footer-2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.request-access-header,
+.request-access-footer-1,
+.request-access-footer-2 {
+    height: 50px;
+    min-height: 50px;
+    flex: 0 0 50px;
+}
+
+.request-access-body {
+    height: 150px;
+    min-height: 150px;
+    flex: 0 0 150px;
+}
+
+.request-access-footer-1 {
+    gap: 16px;
+}
+
+/* =====================================================
+   HEADER > Status
+   Non-selected dashboard tab appearance. Not interactive.
+   Width matches footer 1 (320 + 16 + 140 = 476px).
+   ===================================================== */
+
+.request-access-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 476px;
+    height: 30px;
+    min-width: 476px;
+    min-height: 30px;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border: 1px solid rgba(0, 255, 0, .10);
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    background: rgba(0, 255, 0, .05);
+    color: rgba(225, 255, 225, .85);
+    font: inherit;
+    white-space: nowrap;
+    cursor: default;
+}
+
+/* =====================================================
+   BODY > Branding
+   ActiveManager | project dashboard at 2.5x the application
+   header branding: 15px text -> 37.5px, 8px spacing -> 20px.
+   Colors and weights match the application header exactly.
+   No overflow clipping.
+   ===================================================== */
+
+.request-access-brand {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 20px;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.request-access-brand-name {
+    display: flex;
+    align-items: center;
+}
+
+.request-access-brand-active {
+    color: #8b949e;
+    font-size: 37.5px;
+    font-weight: 600;
+}
+
+.request-access-brand-manager {
+    color: rgba(255, 255, 255, .92);
+    font-size: 37.5px;
+    font-weight: 600;
+}
+
+.request-access-brand-separator {
+    color: #6e7681;
+    font-size: 37.5px;
+    font-weight: 400;
+}
+
+.request-access-brand-module {
+    color: rgba(0, 255, 0, .40);
+    font-size: 37.5px;
+    font-weight: 600;
+}
+
+/* =====================================================
+   FOOTER 1 > Email (disabled, display only)
+   Settings-field appearance.
+   ===================================================== */
+
+.request-access-email {
+    width: 320px;
+    height: 30px;
+    min-width: 320px;
+    min-height: 30px;
+    flex: 0 0 320px;
+    box-sizing: border-box;
+    padding: 0 8px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 4px;
+    background: #0d1117;
+    color: rgba(255, 255, 255, .90);
+}
+
+.request-access-email:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+/* =====================================================
+   FOOTER 1 > Request Access (visual only)
+   Selected dashboard tab appearance, with the tab hover.
+   ===================================================== */
+
+.request-access-request {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 140px;
+    height: 30px;
+    min-width: 140px;
+    min-height: 30px;
+    flex: 0 0 140px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 10px;
+    border: 1px solid rgba(0, 255, 0, .25);
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    background: rgba(0, 255, 0, .15);
+    color: rgba(235, 255, 235, 1);
+    font: inherit;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.request-access-request:hover {
+    background: rgba(0, 255, 0, .10);
+    border-color: rgba(0, 255, 0, .18);
+    color: rgba(235, 255, 235, .95);
+}
+
+/* =====================================================
+   FOOTER 2 > Sign out (native anchor to /.auth/logout)
+   Non-selected dashboard tab appearance, with the tab hover.
+   ===================================================== */
+
+.request-access-sign-out {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 30px;
+    min-width: 120px;
+    min-height: 30px;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border: 1px solid rgba(0, 255, 0, .10);
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    background: rgba(0, 255, 0, .05);
+    color: rgba(225, 255, 225, .85);
+    font: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.request-access-sign-out:hover {
+    background: rgba(0, 255, 0, .10);
+    border-color: rgba(0, 255, 0, .18);
+    color: rgba(235, 255, 235, .95);
+}

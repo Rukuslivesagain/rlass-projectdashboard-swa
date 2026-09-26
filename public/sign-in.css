@@ -1,0 +1,147 @@
+/* =====================================================
+   Sign In - page-owned stylesheet
+   Owned exclusively by public/sign-in.html.
+   ===================================================== */
+
+/* =====================================================
+   Standalone Host Environment
+   Same values as src/css/host.css.
+   ===================================================== */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #010409;
+  color: #c9d1d9;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* =====================================================
+   Sign-In Composition
+   Centered horizontally and vertically.
+   ===================================================== */
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Uniform enlargement of the header branding. zoom scales
+   every font size and spacing below by the same factor, so
+   all relationships remain identical to the header. */
+.sign-in-branding {
+  zoom: 2.5;
+}
+
+.sign-in-action {
+  margin: 40px 0 0 0;
+}
+
+/* =====================================================
+   Application Header Branding
+   Copied verbatim from src/css/application.css - the
+   application stylesheet is not served to signed-out
+   users. Keep in sync with the application header.
+   ===================================================== */
+
+.application-header-left {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-width: 0;
+  min-height: 0;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.application-header-application-name {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  min-width: 0;
+  gap: 0;
+  white-space: nowrap;
+}
+
+.application-header-application-name-active {
+  color: #8b949e;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.application-header-application-name-manager {
+  color: rgba(255, 255, 255, .92);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.application-header-separator {
+  flex: 0 0 auto;
+  color: #6e7681;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.application-header-module-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: rgba(0, 255, 0, .40);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+/* =====================================================
+   Selected Dashboard Tab
+   Copied verbatim from src/css/tabs.css (tab, hover,
+   selected). Keep in sync with the application tabs.
+   ===================================================== */
+
+.project-dashboard-tabs-tab {
+  display: flex;
+  flex: 0 0 120px;
+  width: 120px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 10px;
+  box-sizing: border-box;
+  text-align: left;
+  border: 1px solid rgba(0, 255, 0, .10);
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  color: rgba(225, 255, 225, .85);
+  background: rgba(0, 255, 0, .05);
+  font: inherit;
+  cursor: pointer;
+}
+
+.project-dashboard-tabs-tab:hover {
+  background: rgba(0, 255, 0, .10);
+  border-color: rgba(0, 255, 0, .18);
+  color: rgba(235, 255, 235, .95);
+}
+
+.project-dashboard-tabs-tab-selected {
+  background: rgba(0, 255, 0, .15);
+  border-color: rgba(0, 255, 0, .25);
+  color: rgba(235, 255, 235, 1);
+}
