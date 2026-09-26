@@ -21,3 +21,20 @@ body {
     display: flex;
     flex-direction: column;
 }
+
+/* =====================================================
+   Standalone Host Environment
+
+   Replaces the backdrop and inherited text styling the
+   Power Apps host previously provided around the PCF.
+   Application regions are intentionally transparent and
+   inherit these values.
+   ===================================================== */
+
+html,
+body,
+#app {
+    background-color: #010409;
+    color: #c9d1d9;
+    font-family: "Segoe UI", sans-serif;
+}
