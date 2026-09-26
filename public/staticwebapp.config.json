@@ -49,6 +49,12 @@
             ]
         },
         {
+            "route": "/api/request-access",
+            "allowedRoles": [
+                "authenticated"
+            ]
+        },
+        {
             "route": "/*",
             "allowedRoles": [
                 "activemanager"
