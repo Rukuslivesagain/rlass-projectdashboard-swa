@@ -648,13 +648,17 @@ export class ProjectDashboard {
 
         // =====================================================
         // Application Header - Menu Event
+        //
+        // TEMPORARY developer control - genuine browser reload
+        // (full application restart). Replaces the former
+        // simulated in-instance Startup re-entry.
         // =====================================================
 
         this.btnApplicationMenu.addEventListener(
             "click",
             () => {
 
-                this.processDispatchStartupPayload();
+                window.location.reload();
 
             }
         );
@@ -1983,13 +1987,13 @@ export class ProjectDashboard {
     // =========================================================
     // Dispatch Startup Payload
     //
-    // Extracted verbatim from the Application Header Menu's
-    // proven "click" handler - the one existing, already-working
-    // route back into a fresh PA/PCF Startup pass. Reused by the
-    // Menu itself and by the Application Version Gate's Restart
-    // button, so both intentionally re-enter Startup through the
-    // exact same payload, rather than maintaining two dispatch
-    // paths.
+    // Originally extracted from the Application Header Menu's
+    // "click" handler. Now used by start() (initial standalone
+    // Startup) and by the Application Version Gate's Restart
+    // button (processRestartApplication), so both enter Startup
+    // through the exact same payload, rather than maintaining two
+    // dispatch paths. The Menu button no longer uses it - it now
+    // performs a genuine browser reload.
     //
     // Startup Architecture - Pass 3.4 (Reset-Required Restart
     // Model). mode defaults to "" (ordinary Startup re-entry,
