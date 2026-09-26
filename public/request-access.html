@@ -21,12 +21,13 @@
       }
 
       /* =====================================================
-         Request Access Composition - Locked Four-Band Layout
-         HEADER 50px | BODY 200px | FOOTER 1 50px | FOOTER 2 50px
-         = 350px. The bands own the vertical layout through their
-         fixed heights (no vertical padding or margins); every
-         visual control is fixed at 30px (10px above and below in
-         each 50px band). Centered horizontally and vertically.
+         Request Access Composition - Four Direct-Child Bands
+         HEADER 50px | BODY 150px | FOOTER 1 50px | FOOTER 2 50px
+         = 300px. The four bands are the ONLY layout containers;
+         every visual element is a direct child of its band. No
+         vertical padding, margins, gaps or spacers between bands.
+         Every visual control is fixed at 30px (10px above and
+         below in each 50px band). Centered in the viewport.
          ===================================================== */
 
       body {
@@ -43,7 +44,6 @@
         align-items: center;
       }
 
-      /* Bands - layout only; flex is used only for centering. */
       .request-access-header,
       .request-access-body,
       .request-access-footer-1,
@@ -52,6 +52,8 @@
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
+        padding: 0;
+        margin: 0;
         flex-grow: 0;
         flex-shrink: 0;
       }
@@ -65,29 +67,26 @@
       }
 
       .request-access-body {
-        height: 200px;
-        min-height: 200px;
-        flex: 0 0 200px;
+        height: 150px;
+        min-height: 150px;
+        flex: 0 0 150px;
       }
 
-      /* Uniform enlargement of the header branding. zoom scales
-         every font size and spacing below by the same factor, so
-         all relationships remain identical to the header. */
-      .request-access-branding {
-        zoom: 2.5;
-        flex-shrink: 0;
+      .request-access-footer-1 {
+        gap: 16px;
       }
 
-      /* Status - non-selected dashboard tab formatting.
+      /* HEADER > status - non-selected dashboard tab formatting.
          Visual values copied exactly from src/css/tabs.css
          (.project-dashboard-tabs-tab). Not interactive: no hover,
-         default cursor; width matches the controls group. */
+         default cursor; width matches footer 1 (476px). */
       .request-access-status {
         display: flex;
         width: 476px;
         height: 30px;
+        min-width: 476px;
         min-height: 30px;
-        flex-shrink: 0;
+        flex: 0 0 auto;
         align-items: center;
         justify-content: center;
         padding: 0 10px;
@@ -101,53 +100,17 @@
         white-space: nowrap;
       }
 
-      /* Controls group - locked geometry: 320 + 16 + 140 = 476px,
-         matching the status width. */
-      .request-access-controls {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        height: 30px;
-        min-height: 30px;
-        flex-shrink: 0;
-      }
-
-      /* Control wrappers are flex containers fixed at 30px so no
-         inline line box / line-height can set their height. */
-      .request-access-email {
-        display: flex;
-        width: 320px;
-        height: 30px;
-        min-height: 30px;
-        flex: 0 0 320px;
-      }
-
-      /* Host-page control height (30px) - overrides only the
-         32px height of the verbatim settings field below. */
-      .request-access-email .project-dashboard-settings-select {
-        height: 30px;
-        min-height: 30px;
-        flex: 0 0 auto;
-      }
-
-      .request-access-action {
-        display: flex;
-        width: 140px;
-        height: 30px;
-        min-height: 30px;
-        flex: 0 0 140px;
-      }
-
-      /* Sign out - non-selected dashboard tab formatting.
-         Visual values copied exactly from src/css/tabs.css
-         (.project-dashboard-tabs-tab and its :hover). Native
-         anchor; interactive, so it keeps pointer and hover. */
+      /* FOOTER 2 > Sign out - non-selected dashboard tab
+         formatting. Visual values copied exactly from
+         src/css/tabs.css (.project-dashboard-tabs-tab and its
+         :hover). Native anchor; keeps pointer and hover. */
       .request-access-sign-out {
         display: flex;
         width: 120px;
         height: 30px;
+        min-width: 120px;
         min-height: 30px;
-        flex-shrink: 0;
+        flex: 0 0 auto;
         align-items: center;
         justify-content: center;
         padding: 0 10px;
@@ -297,18 +260,48 @@
       }
 
       /* =====================================================
-         Request Access Label Fit
-         The tab's fixed 120px width wraps "Request Access";
-         locked at 140px (request row: 320 + 16 + 140 = 476px).
-         Width and host-page height (30px) only - every visual
-         property above is unchanged.
+         Page-Local Overrides (this static page only)
+         The verbatim rules above are unchanged; these overrides
+         adapt them to the direct-child band layout.
          ===================================================== */
 
-      .request-access-action .project-dashboard-tabs-tab {
+      /* BODY > branding. Uniform 2.5x enlargement of the header
+         branding (zoom scales every font size and spacing inside
+         by the same factor). Natural size as a direct flex child
+         (the verbatim rule's flex: 1 1 auto / min-width: 0 assume
+         the application header). overflow: visible replaces the
+         verbatim overflow: hidden, which can clip enlarged glyphs. */
+      .request-access-body > .application-header-left {
+        zoom: 2.5;
+        flex: 0 0 auto;
+        overflow: visible;
+      }
+
+      .request-access-body .application-header-module-name {
+        overflow: visible;
+      }
+
+      /* FOOTER 1 > email input - host-page size (verbatim field is
+         width: 100%; height: 32px). */
+      .request-access-footer-1 > .project-dashboard-settings-select {
+        width: 320px;
+        height: 30px;
+        min-width: 320px;
+        min-height: 30px;
+        flex: 0 0 320px;
+        box-sizing: border-box;
+      }
+
+      /* FOOTER 1 > Request Access - host-page size (verbatim tab is
+         120 x 32; 120px wraps "Request Access"). Size only - every
+         visual property of the selected tab is unchanged. */
+      .request-access-footer-1 > .project-dashboard-tabs-tab {
         width: 140px;
         height: 30px;
+        min-width: 140px;
         min-height: 30px;
         flex: 0 0 140px;
+        box-sizing: border-box;
         white-space: nowrap;
       }
     </style>
@@ -320,24 +313,16 @@
         <span class="request-access-status">User not found.</span>
       </div>
       <div class="request-access-body">
-        <div class="request-access-branding">
-          <div class="application-header-left">
-            <div class="application-header-application-name"><span class="application-header-application-name-active">Active</span><span class="application-header-application-name-manager">Manager</span></div>
-            <span class="application-header-separator">|</span>
-            <span class="application-header-module-name">project dashboard</span>
-          </div>
+        <div class="application-header-left">
+          <div class="application-header-application-name"><span class="application-header-application-name-active">Active</span><span class="application-header-application-name-manager">Manager</span></div>
+          <span class="application-header-separator">|</span>
+          <span class="application-header-module-name">project dashboard</span>
         </div>
       </div>
+      <!-- Request Access is visual only: no form, no handler, no request. Request workflow is a future pass. -->
       <div class="request-access-footer-1">
-        <div class="request-access-controls">
-          <div class="request-access-email">
-            <input type="email" id="request-access-email" class="project-dashboard-settings-select" value="" aria-label="Signed-in email" disabled />
-          </div>
-          <!-- Visual only: no form, no handler, no request. Request workflow is a future pass. -->
-          <div class="request-access-action">
-            <button type="button" class="project-dashboard-tabs-tab project-dashboard-tabs-tab-selected">Request Access</button>
-          </div>
-        </div>
+        <input type="email" id="request-access-email" class="project-dashboard-settings-select" value="" aria-label="Signed-in email" disabled />
+        <button type="button" class="project-dashboard-tabs-tab project-dashboard-tabs-tab-selected">Request Access</button>
       </div>
       <div class="request-access-footer-2">
         <a class="request-access-sign-out" href="/.auth/logout">Sign out</a>
