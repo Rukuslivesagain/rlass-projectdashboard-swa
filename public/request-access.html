@@ -10,9 +10,6 @@
   <body>
     <!-- Standalone host page - served by staticwebapp.config.json (403 override). -->
     <div class="request-access-composition">
-      <div class="request-access-header">
-        <span class="request-access-status">User not found.</span>
-      </div>
       <div class="request-access-body">
         <div class="request-access-brand">
           <div class="request-access-brand-name"><span class="request-access-brand-active">Active</span><span class="request-access-brand-manager">Manager</span></div>
@@ -24,9 +21,10 @@
       <div class="request-access-footer-1">
         <input type="email" id="request-access-email" class="request-access-email" value="" aria-label="Signed-in email" disabled />
         <button type="button" class="request-access-request">Request Access</button>
-      </div>
-      <div class="request-access-footer-2">
         <a class="request-access-sign-out" href="/.auth/logout">Sign out</a>
+      </div>
+      <div class="request-access-status-row">
+        <span class="request-access-status">User access keys not found!</span>
       </div>
     </div>
     <script>

@@ -31,13 +31,13 @@ body {
 }
 
 /* =====================================================
-   Composition - Four Direct-Child Bands
-   HEADER 50px | BODY 150px | FOOTER 1 50px | FOOTER 2 50px
-   = 300px. The four bands are the only layout containers;
-   every visual element is a direct child of its band. No
-   vertical padding, margins, gaps or spacers between bands.
-   Every control is fixed at 30px (10px above and below in
-   each 50px band). Centered in the viewport.
+   Composition - Three Direct-Child Bands
+   BODY 150px | FOOTER 50px | STATUS 20px = 220px.
+   The three bands are the only layout containers; every
+   visual element is a direct child of its band. No vertical
+   padding, margins, gaps or spacers between bands. Every
+   control is fixed at 30px (10px above and below in the
+   50px footer). Centered in the viewport.
    ===================================================== */
 
 .request-access-composition {
@@ -46,10 +46,9 @@ body {
     align-items: center;
 }
 
-.request-access-header,
 .request-access-body,
 .request-access-footer-1,
-.request-access-footer-2 {
+.request-access-status-row {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -60,47 +59,36 @@ body {
     flex-shrink: 0;
 }
 
-.request-access-header,
-.request-access-footer-1,
-.request-access-footer-2 {
-    height: 50px;
-    min-height: 50px;
-    flex: 0 0 50px;
-}
-
 .request-access-body {
     height: 150px;
     min-height: 150px;
     flex: 0 0 150px;
 }
 
+/* Footer - Email | Request Access | Sign out
+   320 + 16 + 140 + 16 + 120 = 612px. */
 .request-access-footer-1 {
+    height: 50px;
+    min-height: 50px;
+    flex: 0 0 50px;
     gap: 16px;
 }
 
+.request-access-status-row {
+    height: 20px;
+    min-height: 20px;
+    flex: 0 0 20px;
+}
+
 /* =====================================================
-   HEADER > Status
-   Non-selected dashboard tab appearance. Not interactive.
-   Width matches footer 1 (320 + 16 + 140 = 476px).
+   STATUS > Status message
+   Subtle informational text - not a control. Muted text
+   color from the application palette.
    ===================================================== */
 
 .request-access-status {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 476px;
-    height: 30px;
-    min-width: 476px;
-    min-height: 30px;
-    flex: 0 0 auto;
-    box-sizing: border-box;
-    padding: 0 10px;
-    border: 1px solid rgba(0, 255, 0, .10);
-    border-radius: 6px;
-    background: rgba(0, 255, 0, .05);
-    color: rgba(225, 255, 225, .85);
-    font: inherit;
-    font-size: 14px;
+    color: #8b949e;
+    font-size: 12px;
     white-space: nowrap;
     cursor: default;
 }
@@ -152,7 +140,7 @@ body {
 }
 
 /* =====================================================
-   FOOTER 1 > Email (disabled, display only)
+   FOOTER > Email (disabled, display only)
    Settings-field appearance.
    ===================================================== */
 
@@ -176,7 +164,7 @@ body {
 }
 
 /* =====================================================
-   FOOTER 1 > Request Access (visual only)
+   FOOTER > Request Access (visual only)
    Selected dashboard tab appearance, with the tab hover.
    ===================================================== */
 
@@ -208,7 +196,7 @@ body {
 }
 
 /* =====================================================
-   FOOTER 2 > Sign out (native anchor to /.auth/logout)
+   FOOTER > Sign out (native anchor to /.auth/logout)
    Non-selected dashboard tab appearance, with the tab hover.
    ===================================================== */
 
