@@ -1,0 +1,57 @@
+{
+    "auth": {
+        "rolesSource": "/api/GetRoles",
+        "identityProviders": {
+            "azureActiveDirectory": {
+                "userDetailsClaim": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+                "registration": {
+                    "openIdIssuer": "https://login.microsoftonline.com/5e93c790-e27b-42b1-b915-82f7d02fe1e1",
+                    "clientIdSettingName": "AZURE_CLIENT_ID",
+                    "clientSecretSettingName": "AZURE_CLIENT_SECRET"
+                },
+                "login": {
+                    "loginParameters": [
+                        "resource=https://graph.microsoft.com"
+                    ]
+                }
+            }
+        }
+    },
+    "routes": [
+        {
+            "route": "/sign-in.html",
+            "allowedRoles": [
+                "anonymous"
+            ]
+        },
+        {
+            "route": "/request-access.html",
+            "allowedRoles": [
+                "authenticated"
+            ]
+        },
+        {
+            "route": "/favicon.svg",
+            "allowedRoles": [
+                "anonymous"
+            ]
+        },
+        {
+            "route": "/*",
+            "allowedRoles": [
+                "activemanager"
+            ]
+        }
+    ],
+    "responseOverrides": {
+        "401": {
+            "rewrite": "/sign-in.html"
+        },
+        "403": {
+            "rewrite": "/request-access.html"
+        }
+    },
+    "platform": {
+        "apiRuntime": "node:22"
+    }
+}

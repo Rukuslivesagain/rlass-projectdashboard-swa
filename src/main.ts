@@ -21,18 +21,35 @@ import {
 interface SwaClientPrincipal {
     identityProvider: string;
     userDetails: string;
+    userRoles: string[];
 }
 
 
 // =====================================================
-// Resolve Authenticated Email
+// Admission Role
 //
-// Returns the normalized email of the authenticated SWA
-// principal, or null when no user is signed in. Throws when
-// /.auth/me cannot be read or returns an unexpected shape.
+// Assigned by the SWA rolesSource function (api/GetRoles) to
+// members of the admission security group. SWA route rules
+// (staticwebapp.config.json) are the primary enforcement; the
+// check in bootstrap() is defense in depth only.
 // =====================================================
 
-async function resolveAuthenticatedEmail(): Promise<string | null> {
+const ADMISSION_ROLE = "activemanager";
+
+
+// =====================================================
+// Resolve Authenticated User
+//
+// Returns the normalized email and SWA roles of the
+// authenticated principal, or null when no user is signed in.
+// Throws when /.auth/me cannot be read or returns an
+// unexpected shape.
+// =====================================================
+
+async function resolveAuthenticatedUser(): Promise<{
+    email: string;
+    userRoles: string[];
+} | null> {
 
     const response =
         await fetch(
@@ -80,9 +97,19 @@ async function resolveAuthenticatedEmail(): Promise<string | null> {
 
     }
 
-    return userDetails
-        .trim()
-        .toLowerCase();
+    const userRoles =
+        authContext?.clientPrincipal?.userRoles;
+
+    return {
+        email:
+            userDetails
+                .trim()
+                .toLowerCase(),
+        userRoles:
+            Array.isArray(userRoles)
+                ? userRoles
+                : []
+    };
 
 }
 
@@ -175,13 +202,13 @@ async function bootstrap(): Promise<void> {
 
     }
 
-    let authenticatedEmail:
-        string | null;
+    let authenticatedUser:
+        Awaited<ReturnType<typeof resolveAuthenticatedUser>>;
 
     try {
 
-        authenticatedEmail =
-            await resolveAuthenticatedEmail();
+        authenticatedUser =
+            await resolveAuthenticatedUser();
 
     }
     catch (
@@ -203,7 +230,7 @@ async function bootstrap(): Promise<void> {
     }
 
     if (
-        !authenticatedEmail
+        !authenticatedUser
     ) {
 
         showHostMessage(
@@ -221,12 +248,40 @@ async function bootstrap(): Promise<void> {
 
     }
 
+    // =====================================================
+    // Admission - Defense In Depth
+    //
+    // SWA route rules normally prevent a user without the
+    // admission role from receiving this bundle at all.
+    // =====================================================
+
+    if (
+        !authenticatedUser.userRoles.includes(
+            ADMISSION_ROLE
+        )
+    ) {
+
+        showHostMessage(
+            container,
+            "Project Dashboard - Access Request Required. You are signed in, but your account is not currently authorized to enter ActiveManager.",
+            {
+                text:
+                    "Sign out",
+                href:
+                    "/.auth/logout"
+            }
+        );
+
+        return;
+
+    }
+
     const projectDashboard =
         new ProjectDashboard();
 
     projectDashboard.initialize(
         container,
-        authenticatedEmail
+        authenticatedUser.email
     );
 
     projectDashboard.start();
