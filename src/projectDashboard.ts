@@ -216,6 +216,8 @@ export class ProjectDashboard {
     private btnApplicationUpdateAvailable!: HTMLButtonElement;
     private btnApplicationUpload!: HTMLButtonElement;
     private btnApplicationSettings!: HTMLButtonElement;
+    private ctrApplicationLogoutSeparator!: HTMLSpanElement;
+    private btnApplicationLogout!: HTMLButtonElement;
     private btnApplicationMenu!: HTMLButtonElement;
 
     private message!: HTMLDivElement;
@@ -781,6 +783,62 @@ export class ProjectDashboard {
             ] ?? "";
         
         // =====================================================
+        // Application Header - Logout Separator
+        // =====================================================
+
+        this.ctrApplicationLogoutSeparator =
+            document.createElement(
+                "span"
+            );
+
+        this.ctrApplicationLogoutSeparator.className =
+            "application-header-separator";
+
+        this.ctrApplicationLogoutSeparator.textContent =
+            "|";
+
+        // =====================================================
+        // Application Header - Logout
+        //
+        // Genuine SWA sign-out. SWA owns the authentication
+        // session; no application state is cleared here.
+        // =====================================================
+
+        this.btnApplicationLogout =
+            document.createElement(
+                "button"
+            );
+
+        this.btnApplicationLogout.type =
+            "button";
+
+        this.btnApplicationLogout.className =
+            "application-header-action application-header-action-logout";
+
+        this.btnApplicationLogout.title =
+            "Logout";
+
+        this.btnApplicationLogout.setAttribute(
+            "aria-label",
+            "Logout"
+        );
+
+        this.btnApplicationLogout.innerHTML =
+            icons[
+                "log-out"
+            ] ?? "";
+
+        this.btnApplicationLogout.addEventListener(
+            "click",
+            () => {
+
+                window.location.href =
+                    "/.auth/logout";
+
+            }
+        );
+
+        // =====================================================
         // Application Header - Settings Event
         // =====================================================
 
@@ -1068,7 +1126,9 @@ export class ProjectDashboard {
         this.ctrApplicationHeaderRight.append(
             this.btnApplicationUpdateAvailable,
             this.btnApplicationSettings,
-            this.btnApplicationUpload
+            this.btnApplicationUpload,
+            this.ctrApplicationLogoutSeparator,
+            this.btnApplicationLogout
         );
 
 
