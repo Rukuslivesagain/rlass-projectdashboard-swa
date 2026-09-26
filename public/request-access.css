@@ -32,7 +32,7 @@ body {
 
 /* =====================================================
    Composition - Three Direct-Child Bands
-   BODY 150px | FOOTER 50px | STATUS 20px = 220px.
+   BODY 150px | FOOTER 50px | STATUS 100px = 300px.
    The three bands are the only layout containers; every
    visual element is a direct child of its band. No vertical
    padding, margins, gaps or spacers between bands. Every
@@ -75,19 +75,19 @@ body {
 }
 
 .request-access-status-row {
-    height: 20px;
-    min-height: 20px;
-    flex: 0 0 20px;
+    height: 100px;
+    min-height: 100px;
+    flex: 0 0 100px;
 }
 
 /* =====================================================
    STATUS > Status message
-   Subtle informational text - not a control. Muted text
-   color from the application palette.
+   Subtle informational text - not a control. Red status
+   text (no background, border or larger font).
    ===================================================== */
 
 .request-access-status {
-    color: #8b949e;
+    color: #f85149;
     font-size: 12px;
     white-space: nowrap;
     cursor: default;
